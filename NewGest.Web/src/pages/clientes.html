@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clientes — NewGest</title>
+  <link rel="stylesheet" href="/css/input.css" />
+</head>
+<body class="bg-gray-50 font-sans">
+
+  <div class="flex min-h-screen">
+
+    <!-- Sidebar -->
+    <ng-sidebar></ng-sidebar>
+
+    <!-- Contenido principal (offset de la sidebar fija) -->
+    <main class="flex-1 ml-64 overflow-x-hidden p-8">
+
+      <!-- Cabecera -->
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <h1 class="text-2xl font-bold text-gray-800">Clientes</h1>
+          <p class="text-sm text-gray-500 mt-0.5">Gestión de clientes — M08</p>
+        </div>
+        <button id="btn-nuevo-cliente" class="btn-primary flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+          </svg>
+          Nuevo cliente
+        </button>
+      </div>
+
+      <!-- Filtros -->
+      <div class="mb-4 flex flex-wrap gap-3 items-center">
+        <div class="relative flex-1 min-w-[240px] max-w-md">
+          <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"
+            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+          </svg>
+          <input id="search-clientes" type="text"
+            placeholder="Buscar por código, razón social o CUIT..."
+            class="form-input pl-9" />
+        </div>
+        <select id="filtro-condicion-iva" class="form-input w-auto">
+          <option value="">Todas las condiciones IVA</option>
+          <option value="1">Inscripto</option>
+          <option value="2">Exento</option>
+          <option value="3">Monotributo</option>
+          <option value="4">Consumidor Final</option>
+          <option value="5">No Inscripto</option>
+        </select>
+      </div>
+
+      <!-- Tabla -->
+      <div class="card overflow-hidden">
+        <table class="w-full text-sm">
+          <thead class="bg-gray-50 border-b border-gray-200">
+            <tr>
+              <th class="text-left px-4 py-3 font-medium text-gray-600 whitespace-nowrap">Código</th>
+              <th class="text-left px-4 py-3 font-medium text-gray-600">Razón Social</th>
+              <th class="text-left px-4 py-3 font-medium text-gray-600 whitespace-nowrap">CUIT</th>
+              <th class="text-left px-4 py-3 font-medium text-gray-600">Condición IVA</th>
+              <th class="text-left px-4 py-3 font-medium text-gray-600">Localidad</th>
+              <th class="px-4 py-3 w-24"></th>
+            </tr>
+          </thead>
+          <tbody id="tabla-clientes" class="divide-y divide-gray-100">
+            <tr>
+              <td colspan="6" class="px-4 py-8 text-center text-gray-400 text-sm">Cargando...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Paginación -->
+      <div id="paginacion-clientes" class="flex items-center justify-between mt-4 text-sm text-gray-600"></div>
+
+    </main>
+  </div>
+
+  <!-- ─── Modal ABM Cliente ─────────────────────────────────────────────────── -->
+  <ng-modal id="modal-cliente" titulo="Nuevo cliente" width="max-w-2xl">
+    <form id="form-cliente" class="space-y-4 px-6 py-5" novalidate>
+
+      <div class="grid grid-cols-2 gap-4">
+        <!-- Código -->
+        <div>
+          <label class="form-label">Código <span class="text-red-500">*</span></label>
+          <input name="codigo" type="text" required maxlength="10"
+            class="form-input uppercase" placeholder="ej: CLI001" />
+          <p class="form-error hidden" data-for="codigo">El código es requerido (máx. 10 caracteres).</p>
+        </div>
+
+        <!-- Condición IVA -->
+        <div>
+          <label class="form-label">Condición IVA <span class="text-red-500">*</span></label>
+          <select name="condicionIva" required class="form-input">
+            <option value="">Seleccionar...</option>
+            <option value="1">Inscripto</option>
+            <option value="2">Exento</option>
+            <option value="3">Monotributo</option>
+            <option value="4">Consumidor Final</option>
+            <option value="5">No Inscripto</option>
+          </select>
+          <p class="form-error hidden" data-for="condicionIva">Seleccione una condición.</p>
+        </div>
+      </div>
+
+      <!-- Razón Social -->
+      <div>
+        <label class="form-label">Razón Social <span class="text-red-500">*</span></label>
+        <input name="razonSocial" type="text" required maxlength="100"
+          class="form-input" placeholder="Nombre o razón social completa" />
+        <p class="form-error hidden" data-for="razonSocial">La razón social es requerida.</p>
+      </div>
+
+      <!-- CUIT -->
+      <div>
+        <label class="form-label">CUIT <span class="text-gray-400 font-normal">(opcional)</span></label>
+        <input name="cuit" type="text" maxlength="13"
+          class="form-input" placeholder="20-12345678-9" />
+        <p id="cuit-error" class="form-error hidden">CUIT inválido. Formato: XX-XXXXXXXX-X</p>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <!-- Domicilio -->
+        <div>
+          <label class="form-label">Domicilio</label>
+          <input name="domicilio" type="text" maxlength="150"
+            class="form-input" placeholder="Calle y número" />
+        </div>
+
+        <!-- Localidad -->
+        <div>
+          <label class="form-label">Localidad</label>
+          <input name="localidad" type="text" maxlength="80"
+            class="form-input" placeholder="Ciudad" />
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <!-- Teléfono -->
+        <div>
+          <label class="form-label">Teléfono</label>
+          <input name="telefono" type="text" maxlength="30"
+            class="form-input" placeholder="(011) 4000-0000" />
+        </div>
+
+        <!-- Email -->
+        <div>
+          <label class="form-label">Email</label>
+          <input name="email" type="email" maxlength="100"
+            class="form-input" placeholder="cliente@empresa.com" />
+          <p class="form-error hidden" data-for="email">El email no es válido.</p>
+        </div>
+      </div>
+
+      <!-- Observaciones -->
+      <div>
+        <label class="form-label">Observaciones</label>
+        <textarea name="observaciones" rows="3"
+          class="form-input resize-none" placeholder="Notas internas..."></textarea>
+      </div>
+
+      <!-- Botones -->
+      <div class="flex items-center justify-end gap-2 pt-2 border-t border-gray-100">
+        <button type="button" data-close class="btn-secondary">Cancelar</button>
+        <button type="submit" id="btn-guardar-cliente" class="btn-primary flex items-center gap-2">
+          <svg id="cliente-spinner" class="hidden w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+          </svg>
+          Guardar
+        </button>
+      </div>
+
+    </form>
+  </ng-modal>
+
+  <!-- ─── Scripts ───────────────────────────────────────────────────────────── -->
+  <script type="module" src="/js/components/ng-sidebar.js"></script>
+  <script type="module" src="/js/components/ng-modal.js"></script>
+  <script type="module" src="/js/components/ng-alert.js"></script>
+  <script type="module" src="/js/pages/clientes.js"></script>
+</body>
+</html>

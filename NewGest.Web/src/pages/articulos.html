@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Artículos — NewGest</title>
+  <link rel="stylesheet" href="/css/input.css" />
+</head>
+<body class="bg-gray-50 font-sans">
+
+  <div class="flex min-h-screen">
+
+    <!-- Sidebar -->
+    <ng-sidebar></ng-sidebar>
+
+    <!-- Contenido principal -->
+    <main class="flex-1 ml-64 overflow-x-hidden p-8">
+
+      <!-- Cabecera -->
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <h1 class="text-2xl font-bold text-gray-800">Artículos</h1>
+          <p class="text-sm text-gray-500 mt-0.5">Catálogo de artículos — M10</p>
+        </div>
+        <div class="flex gap-2">
+          <button id="btn-nuevo-grupo" class="btn-secondary flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+            </svg>
+            Nuevo grupo
+          </button>
+          <button id="btn-nuevo-articulo" class="btn-primary flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+            </svg>
+            Nuevo artículo
+          </button>
+        </div>
+      </div>
+
+      <!-- Filtros -->
+      <div class="mb-4 flex flex-wrap gap-3 items-center">
+        <div class="relative flex-1 min-w-[240px] max-w-md">
+          <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"
+            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+          </svg>
+          <input id="search-articulos" type="text"
+            placeholder="Buscar por código o descripción..."
+            class="form-input pl-9" />
+        </div>
+        <select id="filtro-grupo" class="form-input w-auto">
+          <option value="">Todos los grupos</option>
+          <!-- Cargado dinámicamente por JS -->
+        </select>
+      </div>
+
+      <!-- Tabla -->
+      <div class="card overflow-hidden">
+        <table class="w-full text-sm">
+          <thead class="bg-gray-50 border-b border-gray-200">
+            <tr>
+              <th class="text-left px-4 py-3 font-medium text-gray-600 whitespace-nowrap">Código</th>
+              <th class="text-left px-4 py-3 font-medium text-gray-600">Descripción</th>
+              <th class="text-left px-4 py-3 font-medium text-gray-600">Grupo</th>
+              <th class="text-right px-4 py-3 font-medium text-gray-600 whitespace-nowrap">Precio Lista</th>
+              <th class="text-center px-4 py-3 font-medium text-gray-600">IVA%</th>
+              <th class="px-4 py-3 w-24"></th>
+            </tr>
+          </thead>
+          <tbody id="tabla-articulos" class="divide-y divide-gray-100">
+            <tr>
+              <td colspan="6" class="px-4 py-8 text-center text-gray-400 text-sm">Cargando...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Paginación -->
+      <div id="paginacion-articulos" class="flex items-center justify-between mt-4 text-sm text-gray-600"></div>
+
+    </main>
+  </div>
+
+  <!-- ─── Modal ABM Artículo ────────────────────────────────────────────────── -->
+  <ng-modal id="modal-articulo" titulo="Nuevo artículo" width="max-w-2xl">
+    <form id="form-articulo" class="space-y-4 px-6 py-5" novalidate>
+
+      <div class="grid grid-cols-2 gap-4">
+        <!-- Código -->
+        <div>
+          <label class="form-label">Código <span class="text-red-500">*</span></label>
+          <input name="codigo" type="text" required maxlength="15"
+            class="form-input uppercase" placeholder="ej: ART0001" />
+          <p class="form-error hidden" data-for="codigo">El código es requerido (máx. 15 caracteres).</p>
+        </div>
+
+        <!-- IVA -->
+        <div>
+          <label class="form-label">IVA <span class="text-red-500">*</span></label>
+          <select name="porcentajeIva" required class="form-input">
+            <option value="21">21%</option>
+            <option value="10.5">10.5%</option>
+            <option value="0">0% (Exento)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Descripción -->
+      <div>
+        <label class="form-label">Descripción <span class="text-red-500">*</span></label>
+        <input name="descripcion" type="text" required maxlength="100"
+          class="form-input" placeholder="Descripción del artículo" />
+        <p class="form-error hidden" data-for="descripcion">La descripción es requerida.</p>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <!-- Grupo -->
+        <div>
+          <label class="form-label">Grupo <span class="text-red-500">*</span></label>
+          <select name="idGrupo" required class="form-input">
+            <option value="">Seleccionar grupo...</option>
+            <!-- Cargado dinámicamente -->
+          </select>
+          <p class="form-error hidden" data-for="idGrupo">Debe seleccionar un grupo.</p>
+        </div>
+
+        <!-- Unidad -->
+        <div>
+          <label class="form-label">Unidad <span class="text-red-500">*</span></label>
+          <select name="idUnidad" required class="form-input">
+            <option value="1">Unidad (U)</option>
+            <option value="2">Kilogramo (Kg)</option>
+            <option value="3">Litro (Lt)</option>
+            <option value="4">Caja (Cj)</option>
+            <option value="5">Par (Par)</option>
+            <option value="6">Metro (Mt)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <!-- Precio Lista -->
+        <div>
+          <label class="form-label">Precio Lista <span class="text-red-500">*</span></label>
+          <div class="relative">
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">$</span>
+            <input name="precioLista" type="number" min="0" step="0.0001" required
+              class="form-input pl-7" placeholder="0.00" />
+          </div>
+          <p class="form-error hidden" data-for="precioLista">Ingrese un precio válido.</p>
+        </div>
+
+        <!-- Precio Costo -->
+        <div>
+          <label class="form-label">Precio Costo</label>
+          <div class="relative">
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">$</span>
+            <input name="precioCosto" type="number" min="0" step="0.0001"
+              class="form-input pl-7" placeholder="0.00" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Observaciones -->
+      <div>
+        <label class="form-label">Observaciones</label>
+        <textarea name="observaciones" rows="3"
+          class="form-input resize-none" placeholder="Notas internas..."></textarea>
+      </div>
+
+      <!-- Botones -->
+      <div class="flex items-center justify-end gap-2 pt-2 border-t border-gray-100">
+        <button type="button" data-close class="btn-secondary">Cancelar</button>
+        <button type="submit" id="btn-guardar-articulo" class="btn-primary flex items-center gap-2">
+          <svg id="articulo-spinner" class="hidden w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+          </svg>
+          Guardar
+        </button>
+      </div>
+
+    </form>
+  </ng-modal>
+
+  <!-- ─── Modal Grupo ───────────────────────────────────────────────────────── -->
+  <ng-modal id="modal-grupo" titulo="Nuevo grupo" width="max-w-md">
+    <form id="form-grupo" class="space-y-4 px-6 py-5" novalidate>
+      <div>
+        <label class="form-label">Descripción <span class="text-red-500">*</span></label>
+        <input name="descripcion" type="text" required maxlength="100"
+          class="form-input" placeholder="ej: Electrónica, Ropa, Alimentos..." />
+        <p class="form-error hidden" data-for="descripcion-grupo">La descripción es requerida.</p>
+      </div>
+      <div>
+        <label class="form-label">Grupo padre <span class="text-gray-400 font-normal">(opcional)</span></label>
+        <select name="idGrupoPadre" class="form-input">
+          <option value="">Sin padre (grupo raíz)</option>
+          <!-- Cargado dinámicamente -->
+        </select>
+      </div>
+      <div class="flex items-center justify-end gap-2 pt-2 border-t border-gray-100">
+        <button type="button" data-close class="btn-secondary">Cancelar</button>
+        <button type="submit" class="btn-primary">Crear grupo</button>
+      </div>
+    </form>
+  </ng-modal>
+
+  <!-- ─── Scripts ───────────────────────────────────────────────────────────── -->
+  <script type="module" src="/js/components/ng-sidebar.js"></script>
+  <script type="module" src="/js/components/ng-modal.js"></script>
+  <script type="module" src="/js/components/ng-alert.js"></script>
+  <script type="module" src="/js/pages/articulos.js"></script>
+</body>
+</html>
