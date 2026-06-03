@@ -29,6 +29,10 @@ public class NewgestDbContext : IdentityDbContext<ApplicationUser, ApplicationRo
     public DbSet<ExistenciaDeposito> ExistenciasDeposito => Set<ExistenciaDeposito>();
     public DbSet<MovimientoStock> MovimientosStock => Set<MovimientoStock>();
 
+    // Comercial — Comprobantes (Facturación)
+    public DbSet<Comprobante> Comprobantes => Set<Comprobante>();
+    public DbSet<ItemComprobante> ItemsComprobante => Set<ItemComprobante>();
+
     // Comercial — Pedidos y Remitos
     public DbSet<Pedido> Pedidos => Set<Pedido>();
     public DbSet<ItemPedido> ItemsPedido => Set<ItemPedido>();

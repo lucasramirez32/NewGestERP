@@ -174,6 +174,23 @@ public class StockService : IStockService
             .ToListAsync(ct);
     }
 
+    public async Task DescontarStockAsync(int idEmpresa, int idArticulo, decimal cantidad, CancellationToken ct)
+    {
+        // Descuenta del primer depósito activo de la empresa — en Sprint 9+ se podrá especificar depósito
+        var deposito = await _db.Depositos
+            .Where(d => d.IdEmpresa == idEmpresa && d.Activo)
+            .OrderBy(d => d.IdDeposito)
+            .FirstOrDefaultAsync(ct);
+
+        if (deposito is null) return;
+
+        var mov = MovimientoStock.Crear(
+            idEmpresa, idArticulo, deposito.IdDeposito,
+            TipoMovimiento.Salida, cantidad, 0, null, null, "Facturación");
+
+        await RegistrarMovimientoAsync(mov, ct);
+    }
+
     private static string CalcularNivel(decimal cantidad, decimal stockMinimo)
     {
         if (stockMinimo <= 0) return "verde";

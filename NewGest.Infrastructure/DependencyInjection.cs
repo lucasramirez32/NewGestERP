@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NewGest.Application.Interfaces;
+using NewGest.Application.Services;
 using NewGest.Domain.Entities.Users;
 using NewGest.Infrastructure.Auth;
 using NewGest.Infrastructure.Data;
@@ -56,11 +57,15 @@ public static class DependencyInjection
         services.AddScoped<IViajeRepository, ViajeRepository>();
         services.AddScoped<IMutualRepository, MutualRepository>();
 
+        // Repositorios — Sprint 8-11 (facturación)
+        services.AddScoped<IComprobanteRepository, ComprobanteRepository>();
+
         // Servicios de infraestructura
         services.AddScoped<IJwtService, JwtService>();
         services.AddHttpContextAccessor();
         services.AddScoped<ICurrentUserService, CurrentUserService>();
         services.AddScoped<IStockService, StockService>();
+        services.AddScoped<IAfipService, AfipServiceVfpWrapper>();
 
         return services;
     }
