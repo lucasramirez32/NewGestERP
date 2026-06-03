@@ -99,6 +99,9 @@ app.MapAuthEndpoints();
 app.MapParametrosEndpoints();
 app.MapClientesEndpoints();
 app.MapArticulosEndpoints();
+app.MapStockEndpoints();
+app.MapPedidosEndpoints();
+app.MapPersonalEndpoints();
 
 app.Run();
 
