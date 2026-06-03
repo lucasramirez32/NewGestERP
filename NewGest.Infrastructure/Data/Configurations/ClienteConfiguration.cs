@@ -26,6 +26,11 @@ public class ClienteConfiguration : IEntityTypeConfiguration<Cliente>
         builder.HasIndex(c => new { c.IdEmpresa, c.Codigo }).IsUnique();
         builder.HasIndex(c => new { c.IdEmpresa, c.CUIT }).HasFilter("[CUIT] IS NOT NULL");
 
+        // El trigger trg_Clientes_Audit en neg.Clientes es incompatible con la
+        // cláusula OUTPUT que EF Core usa por defecto para recuperar el IDENTITY generado.
+        // UseSqlOutputClause(false) hace que EF Core use SCOPE_IDENTITY() en su lugar.
+        builder.ToTable(t => t.UseSqlOutputClause(false));
+
         // Soft delete: filtro global — invisible para queries normales
         builder.HasQueryFilter(c => c.Activo);
     }

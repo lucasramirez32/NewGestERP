@@ -51,7 +51,7 @@ public class CrearArticuloCommandHandler : IRequestHandler<CrearArticuloCommand,
         => new(
             a.IdArticulo,
             a.IdEmpresa,
-            a.Codigo,
+            a.Codigo.Trim(),
             a.Descripcion,
             a.IdGrupo,
             grupoDescripcion,

@@ -51,7 +51,7 @@ public class CrearClienteCommandHandler : IRequestHandler<CrearClienteCommand, C
     internal static ClienteDto ToDto(Cliente c) => new(
         c.IdCliente,
         c.IdEmpresa,
-        c.Codigo,
+        c.Codigo.Trim(),
         c.RazonSocial,
         c.CUIT,
         c.CondicionIva,
