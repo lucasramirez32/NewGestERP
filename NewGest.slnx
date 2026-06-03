@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/tests/">
+    <Project Path="tests/NewGest.IntegrationTests/NewGest.IntegrationTests.csproj" />
+    <Project Path="tests/NewGest.UnitTests/NewGest.UnitTests.csproj" />
+  </Folder>
+  <Project Path="NewGest.Api/NewGest.Api.csproj" />
+  <Project Path="NewGest.Application/NewGest.Application.csproj" />
+  <Project Path="NewGest.Domain/NewGest.Domain.csproj" />
+  <Project Path="NewGest.Infrastructure/NewGest.Infrastructure.csproj" />
+</Solution>

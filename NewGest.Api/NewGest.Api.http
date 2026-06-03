@@ -1,0 +1,6 @@
+@NewGest.Api_HostAddress = http://localhost:5263
+
+GET {{NewGest.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
