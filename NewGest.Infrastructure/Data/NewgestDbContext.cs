@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using NewGest.Domain.Entities.Config;
 using NewGest.Domain.Entities.Empresas;
+using NewGest.Domain.Entities.Neg;
 using NewGest.Domain.Entities.Users;
 
 namespace NewGest.Infrastructure.Data;
@@ -15,6 +16,10 @@ public class NewgestDbContext : IdentityDbContext<ApplicationUser, ApplicationRo
 
     public DbSet<Empresa> Empresas => Set<Empresa>();
     public DbSet<Parametro> Parametros => Set<Parametro>();
+    public DbSet<Cliente> Clientes => Set<Cliente>();
+    public DbSet<Articulo> Articulos => Set<Articulo>();
+    public DbSet<GrupoArticulo> GruposArticulos => Set<GrupoArticulo>();
+    public DbSet<Unidad> Unidades => Set<Unidad>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

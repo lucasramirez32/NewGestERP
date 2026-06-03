@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NewGest.Infrastructure.Data;
 
@@ -11,9 +12,11 @@ using NewGest.Infrastructure.Data;
 namespace NewGest.Infrastructure.Migrations
 {
     [DbContext(typeof(NewgestDbContext))]
-    partial class NewgestDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260603155614_AddCatalogoMaestros")]
+    partial class AddCatalogoMaestros
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

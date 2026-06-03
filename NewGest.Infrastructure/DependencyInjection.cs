@@ -44,6 +44,10 @@ public static class DependencyInjection
         // Repositorios
         services.AddScoped<IEmpresaRepository, EmpresaRepository>();
         services.AddScoped<IParametroRepository, ParametroRepository>();
+        services.AddScoped<IClienteRepository, ClienteRepository>();
+        services.AddScoped<IArticuloRepository, ArticuloRepository>();
+        services.AddScoped<IGrupoArticuloRepository, GrupoArticuloRepository>();
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         // Servicios de infraestructura
         services.AddScoped<IJwtService, JwtService>();

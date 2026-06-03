@@ -97,6 +97,8 @@ app.UseStaticFiles();
 // ─── Endpoints ───────────────────────────────────────────────────────────────
 app.MapAuthEndpoints();
 app.MapParametrosEndpoints();
+app.MapClientesEndpoints();
+app.MapArticulosEndpoints();
 
 app.Run();
 

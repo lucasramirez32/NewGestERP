@@ -1,0 +1,12 @@
+namespace NewGest.Application.DTOs.Articulos;
+
+public record CrearArticuloDto(
+    string Codigo,
+    string Descripcion,
+    int IdGrupo,
+    int IdUnidad,
+    decimal PrecioLista,
+    decimal PrecioCosto,
+    decimal PorcentajeIva,
+    string? Observaciones
+);
