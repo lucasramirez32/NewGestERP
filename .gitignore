@@ -1,0 +1,58 @@
+# ── .NET ────────────────────────────────────────────────
+bin/
+obj/
+*.user
+*.suo
+.vs/
+*.nupkg
+*.snupkg
+TestResults/
+coverage/
+*.coverage
+*.coveragexml
+
+# EF Core migrations scaffolding temporal
+Migrations/*.Designer.cs    # NO ignorar — los migrations van al repo
+# Solo ignorar si se generan snapshot temporales fuera de Migrations/
+
+# ── Node / Frontend ──────────────────────────────────────
+node_modules/
+NewGest.Web/dist/           # Output de Vite build — se regenera
+NewGest.Web/.vite/
+*.lock                      # No ignorar package-lock.json
+
+# ── Python / ETL ────────────────────────────────────────
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+tools/etl/logs/             # Logs de migración (pueden tener PII)
+tools/etl/output/
+
+# ── Base de datos ────────────────────────────────────────
+*.mdf
+*.ldf
+*.bak
+
+# ── Secretos y certificados (NUNCA al repo) ─────────────
+*.p12
+*.pfx
+*.cer
+*.key
+appsettings.Production.json
+appsettings.Staging.json
+.env
+.env.*
+!.env.example
+**/secrets.json
+
+# ── Sistema operativo ────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── IDEs ─────────────────────────────────────────────────
+.idea/
+*.swp
+*~
