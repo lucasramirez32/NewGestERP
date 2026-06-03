@@ -10,4 +10,5 @@ public interface IStockService
     Task<IReadOnlyList<ExistenciaDepositoDto>> GetExistenciasAsync(int idEmpresa, int idArticulo, CancellationToken ct);
     Task<PagedResult<MovimientoStockDto>> GetHistorialAsync(int idEmpresa, int idArticulo, int page, int pageSize, CancellationToken ct);
     Task<IReadOnlyList<ExistenciaDepositoDto>> GetAlertasReposicionAsync(int idEmpresa, CancellationToken ct);
+    Task DescontarStockAsync(int idEmpresa, int idArticulo, decimal cantidad, CancellationToken ct);
 }
