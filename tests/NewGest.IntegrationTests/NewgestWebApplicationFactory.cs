@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Diagnostics;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NewGest.Domain.Entities.Empresas;
@@ -60,9 +62,13 @@ public class NewgestWebApplicationFactory : WebApplicationFactory<Program>, IAsy
             if (descriptor != null)
                 services.Remove(descriptor);
 
-            // Re-registrar apuntando a NewGest_Test
+            // Re-registrar apuntando a NewGest_Test.
+            // ConfigureWarnings: PendingModelChangesWarning se ignora porque
+            // la factory re-registra el DbContext sin las opciones de migración
+            // del registro principal, aunque no haya cambios pendientes reales.
             services.AddDbContext<NewgestDbContext>(options =>
-                options.UseSqlServer(ConnectionString));
+                options.UseSqlServer(ConnectionString)
+                       .ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning)));
         });
     }
 
