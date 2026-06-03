@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using NewGest.Domain.Entities.Com;
 using NewGest.Domain.Entities.Config;
 using NewGest.Domain.Entities.Empresas;
+using NewGest.Domain.Entities.Inv;
 using NewGest.Domain.Entities.Neg;
 using NewGest.Domain.Entities.Users;
 
@@ -14,12 +16,29 @@ public class NewgestDbContext : IdentityDbContext<ApplicationUser, ApplicationRo
 {
     public NewgestDbContext(DbContextOptions<NewgestDbContext> options) : base(options) { }
 
+    // Catálogo
     public DbSet<Empresa> Empresas => Set<Empresa>();
     public DbSet<Parametro> Parametros => Set<Parametro>();
     public DbSet<Cliente> Clientes => Set<Cliente>();
     public DbSet<Articulo> Articulos => Set<Articulo>();
     public DbSet<GrupoArticulo> GruposArticulos => Set<GrupoArticulo>();
     public DbSet<Unidad> Unidades => Set<Unidad>();
+
+    // Inventario / Stock
+    public DbSet<Deposito> Depositos => Set<Deposito>();
+    public DbSet<ExistenciaDeposito> ExistenciasDeposito => Set<ExistenciaDeposito>();
+    public DbSet<MovimientoStock> MovimientosStock => Set<MovimientoStock>();
+
+    // Comercial — Pedidos y Remitos
+    public DbSet<Pedido> Pedidos => Set<Pedido>();
+    public DbSet<ItemPedido> ItemsPedido => Set<ItemPedido>();
+    public DbSet<Remito> Remitos => Set<Remito>();
+    public DbSet<ItemRemito> ItemsRemito => Set<ItemRemito>();
+
+    // Personal
+    public DbSet<Empleado> Empleados => Set<Empleado>();
+    public DbSet<Viaje> Viajes => Set<Viaje>();
+    public DbSet<Mutual> Mutuales => Set<Mutual>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

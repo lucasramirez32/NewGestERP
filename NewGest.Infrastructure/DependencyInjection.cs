@@ -41,7 +41,7 @@ public static class DependencyInjection
         .AddEntityFrameworkStores<NewgestDbContext>()
         .AddDefaultTokenProviders();
 
-        // Repositorios
+        // Repositorios — Sprint 1-4 (catálogo)
         services.AddScoped<IEmpresaRepository, EmpresaRepository>();
         services.AddScoped<IParametroRepository, ParametroRepository>();
         services.AddScoped<IClienteRepository, ClienteRepository>();
@@ -49,10 +49,18 @@ public static class DependencyInjection
         services.AddScoped<IGrupoArticuloRepository, GrupoArticuloRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
+        // Repositorios — Sprint 5-7 (inventario, pedidos, personal)
+        services.AddScoped<IDepositoRepository, DepositoRepository>();
+        services.AddScoped<IPedidoRepository, PedidoRepository>();
+        services.AddScoped<IEmpleadoRepository, EmpleadoRepository>();
+        services.AddScoped<IViajeRepository, ViajeRepository>();
+        services.AddScoped<IMutualRepository, MutualRepository>();
+
         // Servicios de infraestructura
         services.AddScoped<IJwtService, JwtService>();
         services.AddHttpContextAccessor();
         services.AddScoped<ICurrentUserService, CurrentUserService>();
+        services.AddScoped<IStockService, StockService>();
 
         return services;
     }
