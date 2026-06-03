@@ -17,51 +17,75 @@ public class StockService : IStockService
 
     /// <summary>
     /// Registra el movimiento y actualiza la existencia correspondiente.
+    /// La actualización de Cantidad se realiza con MERGE para garantizar
+    /// atomicidad bajo concurrencia (evita lost-update — reemplaza el RLOCK() de VFP).
     /// NO abre su propia transacción — el caller maneja el UoW.
     /// </summary>
     public async Task RegistrarMovimientoAsync(MovimientoStock mov, CancellationToken ct)
     {
         await _db.MovimientosStock.AddAsync(mov, ct);
 
-        var existencia = await _db.ExistenciasDeposito
-            .FirstOrDefaultAsync(e =>
-                e.IdArticulo == mov.IdArticulo &&
-                e.IdDeposito == mov.IdDeposito &&
-                e.IdEmpresa == mov.IdEmpresa, ct);
-
-        if (existencia is null)
+        if (mov.Tipo == TipoMovimiento.Ajuste)
         {
-            existencia = new ExistenciaDeposito
-            {
-                IdEmpresa = mov.IdEmpresa,
-                IdArticulo = mov.IdArticulo,
-                IdDeposito = mov.IdDeposito,
-                Cantidad = 0,
-                CostoPromedio = 0,
-                StockMinimo = 0
-            };
-            _db.ExistenciasDeposito.Add(existencia);
+            // Ajuste: fijar la cantidad al valor absoluto.
+            // Usa MERGE para crear la fila si no existe, o actualizar si ya existe.
+            await _db.Database.ExecuteSqlRawAsync(
+                """
+                MERGE inv.ExistenciasDeposito WITH (HOLDLOCK) AS tgt
+                USING (SELECT {0} AS IdEmpresa, {1} AS IdArticulo, {2} AS IdDeposito) AS src
+                  ON tgt.IdEmpresa = src.IdEmpresa
+                 AND tgt.IdArticulo = src.IdArticulo
+                 AND tgt.IdDeposito = src.IdDeposito
+                WHEN MATCHED THEN
+                    UPDATE SET Cantidad = {3}
+                WHEN NOT MATCHED THEN
+                    INSERT (IdEmpresa, IdArticulo, IdDeposito, Cantidad, CostoPromedio, StockMinimo)
+                    VALUES ({0}, {1}, {2}, {3}, 0, 0);
+                """,
+                mov.IdEmpresa, mov.IdArticulo, mov.IdDeposito, mov.Cantidad);
         }
-
-        var delta = mov.Tipo switch
+        else
         {
-            TipoMovimiento.Entrada => mov.Cantidad,
-            TipoMovimiento.Salida => -mov.Cantidad,
-            TipoMovimiento.Ajuste => mov.Cantidad - existencia.Cantidad,   // ajuste absoluto
-            TipoMovimiento.Transferencia => -mov.Cantidad,                 // origen; destino en otro mov
-            _ => throw new DomainException($"Tipo de movimiento desconocido: {mov.Tipo}")
-        };
+            // Entrada/Salida/Transferencia: delta incremental — MERGE con suma atómica.
+            var delta = mov.Tipo switch
+            {
+                TipoMovimiento.Entrada => mov.Cantidad,
+                TipoMovimiento.Salida => -mov.Cantidad,
+                TipoMovimiento.Transferencia => -mov.Cantidad,   // origen; destino en otro mov
+                _ => throw new DomainException($"Tipo de movimiento desconocido: {mov.Tipo}")
+            };
 
-        existencia.Cantidad += delta;
+            await _db.Database.ExecuteSqlRawAsync(
+                """
+                MERGE inv.ExistenciasDeposito WITH (HOLDLOCK) AS tgt
+                USING (SELECT {0} AS IdEmpresa, {1} AS IdArticulo, {2} AS IdDeposito) AS src
+                  ON tgt.IdEmpresa = src.IdEmpresa
+                 AND tgt.IdArticulo = src.IdArticulo
+                 AND tgt.IdDeposito = src.IdDeposito
+                WHEN MATCHED THEN
+                    UPDATE SET Cantidad = tgt.Cantidad + {3}
+                WHEN NOT MATCHED THEN
+                    INSERT (IdEmpresa, IdArticulo, IdDeposito, Cantidad, CostoPromedio, StockMinimo)
+                    VALUES ({0}, {1}, {2}, {3}, 0, 0);
+                """,
+                mov.IdEmpresa, mov.IdArticulo, mov.IdDeposito, delta);
 
-        // Costo promedio ponderado — solo en entradas con costo informado
-        if (mov.Tipo == TipoMovimiento.Entrada && mov.CostoUnitario > 0 && existencia.Cantidad > 0)
-        {
-            var cantidadAnterior = existencia.Cantidad - mov.Cantidad;
-            existencia.CostoPromedio = cantidadAnterior <= 0
-                ? mov.CostoUnitario
-                : ((cantidadAnterior * existencia.CostoPromedio) + (mov.Cantidad * mov.CostoUnitario))
-                  / existencia.Cantidad;
+            // Actualizar costo promedio ponderado en entradas — requiere re-leer la fila
+            if (mov.Tipo == TipoMovimiento.Entrada && mov.CostoUnitario > 0)
+            {
+                await _db.Database.ExecuteSqlRawAsync(
+                    """
+                    UPDATE inv.ExistenciasDeposito
+                    SET CostoPromedio =
+                        CASE
+                            WHEN Cantidad <= 0 THEN {3}
+                            WHEN (Cantidad - {2}) <= 0 THEN {3}
+                            ELSE (((Cantidad - {2}) * CostoPromedio) + ({2} * {3})) / Cantidad
+                        END
+                    WHERE IdEmpresa = {0} AND IdArticulo = {1} AND IdDeposito = {4}
+                    """,
+                    mov.IdEmpresa, mov.IdArticulo, mov.Cantidad, mov.CostoUnitario, mov.IdDeposito);
+            }
         }
     }
 
