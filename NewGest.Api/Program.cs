@@ -102,6 +102,7 @@ app.MapArticulosEndpoints();
 app.MapStockEndpoints();
 app.MapPedidosEndpoints();
 app.MapPersonalEndpoints();
+app.MapComprobantesEndpoints();
 
 app.Run();
 

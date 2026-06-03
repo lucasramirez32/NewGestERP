@@ -6,6 +6,5 @@ namespace NewGest.Application.Features.Comprobantes.Commands.EmitirLote;
 
 public record EmitirLoteCommand(
     int IdEmpresa,
-    string CuitEmisor,
     List<EmitirFacturaCommand> Comprobantes
 ) : IRequest<LoteResultDto>;

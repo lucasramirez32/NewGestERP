@@ -16,15 +16,19 @@ public class EmitirFacturaCommandHandler : IRequestHandler<EmitirFacturaCommand,
     private readonly IAfipService _afipService;
     private readonly IUnitOfWork _uow;
 
+    private readonly IEmpresaRepository _empresasRepo;
+
     public EmitirFacturaCommandHandler(
         IComprobanteRepository comprobantesRepo,
         IClienteRepository clientesRepo,
+        IEmpresaRepository empresasRepo,
         IStockService stockService,
         IAfipService afipService,
         IUnitOfWork uow)
     {
         _comprobantesRepo = comprobantesRepo;
         _clientesRepo = clientesRepo;
+        _empresasRepo = empresasRepo;
         _stockService = stockService;
         _afipService = afipService;
         _uow = uow;
@@ -32,6 +36,12 @@ public class EmitirFacturaCommandHandler : IRequestHandler<EmitirFacturaCommand,
 
     public async Task<FacturaEmitidaDto> Handle(EmitirFacturaCommand request, CancellationToken ct)
     {
+        var empresa = await _empresasRepo.ObtenerPorIdAsync(request.IdEmpresa, ct)
+            ?? throw new DomainException($"Empresa {request.IdEmpresa} no encontrada.");
+
+        var cuitEmisor = empresa.Cuit
+            ?? throw new DomainException("La empresa no tiene CUIT configurado.");
+
         var cliente = await _clientesRepo.GetByIdAsync(request.IdCliente, request.IdEmpresa, ct)
             ?? throw new DomainException($"Cliente {request.IdCliente} no encontrado.");
 
@@ -58,7 +68,7 @@ public class EmitirFacturaCommandHandler : IRequestHandler<EmitirFacturaCommand,
         // Solo facturas electrónicas (A, B, C) solicitan CAE
         if (EsElectronica(request.Tipo))
         {
-            var afipRequest = BuildAfipRequest(request.CuitEmisor, comprobante, numero, items);
+            var afipRequest = BuildAfipRequest(cuitEmisor, comprobante, numero, items);
             var caeResponse = await _afipService.SolicitarCaeAsync(afipRequest, ct);
             comprobante.AsignarCae(caeResponse.CodigoCae, caeResponse.FechaVencimiento);
         }

@@ -6,7 +6,6 @@ public class EmitirFacturaCommandValidator : AbstractValidator<EmitirFacturaComm
 {
     public EmitirFacturaCommandValidator()
     {
-        RuleFor(x => x.CuitEmisor).NotEmpty().Length(11);
         RuleFor(x => x.PuntoVenta).InclusiveBetween(1, 9999);
         RuleFor(x => x.Fecha).NotEmpty();
         RuleFor(x => x.IdCliente).GreaterThan(0);

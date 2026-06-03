@@ -6,7 +6,6 @@ namespace NewGest.Application.Features.Comprobantes.Commands.EmitirFactura;
 
 public record EmitirFacturaCommand(
     int IdEmpresa,
-    string CuitEmisor,
     TipoComprobante Tipo,
     int PuntoVenta,
     DateOnly Fecha,

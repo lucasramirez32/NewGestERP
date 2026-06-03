@@ -66,6 +66,7 @@ public static class DependencyInjection
         services.AddScoped<ICurrentUserService, CurrentUserService>();
         services.AddScoped<IStockService, StockService>();
         services.AddScoped<IAfipService, AfipServiceVfpWrapper>();
+        services.AddScoped<IQrFiscalService, QrFiscalService>();
 
         return services;
     }
