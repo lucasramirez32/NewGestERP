@@ -46,10 +46,13 @@ public class ExceptionHandlingMiddleware
     private static Task WriteErrorResponse(HttpContext context, HttpStatusCode status, string message)
         => WriteJsonResponse(context, status, new { message });
 
+    private static readonly JsonSerializerOptions _jsonOptions = new(JsonSerializerDefaults.Web);
+
     private static async Task WriteJsonResponse(HttpContext context, HttpStatusCode status, object body)
     {
         context.Response.StatusCode = (int)status;
-        context.Response.ContentType = "application/json";
-        await context.Response.WriteAsync(JsonSerializer.Serialize(body));
+        // WriteAsJsonAsync usa la infraestructura interna de ASP.NET Core para serializar,
+        // compatible con TestServer en .NET 10 sin requerir PipeWriter.UnflushedBytes.
+        await context.Response.WriteAsJsonAsync(body, body.GetType(), _jsonOptions);
     }
 }
