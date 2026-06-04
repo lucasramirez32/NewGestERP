@@ -12,11 +12,10 @@ public class EmitirFacturaCommandHandler : IRequestHandler<EmitirFacturaCommand,
 {
     private readonly IComprobanteRepository _comprobantesRepo;
     private readonly IClienteRepository _clientesRepo;
+    private readonly IEmpresaRepository _empresasRepo;
     private readonly IStockService _stockService;
     private readonly IAfipService _afipService;
     private readonly IUnitOfWork _uow;
-
-    private readonly IEmpresaRepository _empresasRepo;
 
     public EmitirFacturaCommandHandler(
         IComprobanteRepository comprobantesRepo,
@@ -45,6 +44,7 @@ public class EmitirFacturaCommandHandler : IRequestHandler<EmitirFacturaCommand,
         var cliente = await _clientesRepo.GetByIdAsync(request.IdCliente, request.IdEmpresa, ct)
             ?? throw new DomainException($"Cliente {request.IdCliente} no encontrado.");
 
+        // El número se reserva de forma atómica antes de llamar a AFIP
         var numero = await _comprobantesRepo.ObtenerProximoNumeroAsync(
             request.IdEmpresa, request.PuntoVenta, request.Tipo, ct);
 
@@ -65,7 +65,6 @@ public class EmitirFacturaCommandHandler : IRequestHandler<EmitirFacturaCommand,
             items,
             request.IdPedidoOrigen);
 
-        // Solo facturas electrónicas (A, B, C) solicitan CAE
         if (EsElectronica(request.Tipo))
         {
             var afipRequest = BuildAfipRequest(cuitEmisor, comprobante, numero, items);
@@ -73,13 +72,13 @@ public class EmitirFacturaCommandHandler : IRequestHandler<EmitirFacturaCommand,
             comprobante.AsignarCae(caeResponse.CodigoCae, caeResponse.FechaVencimiento);
         }
 
-        // Descontar stock en artículos de inventario
-        foreach (var item in items)
-        {
-            await _stockService.DescontarStockAsync(request.IdEmpresa, item.IdArticulo, item.Cantidad, ct);
-        }
-
+        // Fix 3: AddAsync y DescontarStock antes del commit único para garantizar atomicidad.
+        // Si CommitAsync falla, ni el comprobante ni el ajuste de stock quedan persistidos.
         await _comprobantesRepo.AddAsync(comprobante, ct);
+
+        foreach (var item in items)
+            await _stockService.DescontarStockAsync(request.IdEmpresa, item.IdArticulo, item.Cantidad, ct);
+
         await _uow.CommitAsync(ct);
 
         return new FacturaEmitidaDto(
@@ -92,19 +91,29 @@ public class EmitirFacturaCommandHandler : IRequestHandler<EmitirFacturaCommand,
             comprobante.Total);
     }
 
-    private static bool EsElectronica(TipoComprobante tipo) => tipo is
-        TipoComprobante.FacturaA or TipoComprobante.FacturaB or TipoComprobante.FacturaC or
+    // Fix 4: FacturaM (código 51 AFIP) es electrónica
+    public static bool EsElectronica(TipoComprobante tipo) => tipo is
+        TipoComprobante.FacturaA   or TipoComprobante.FacturaB   or TipoComprobante.FacturaC   or
+        TipoComprobante.FacturaM   or
         TipoComprobante.NotaCreditoA or TipoComprobante.NotaCreditoB or TipoComprobante.NotaCreditoC or
-        TipoComprobante.NotaDebitoA or TipoComprobante.NotaDebitoB or TipoComprobante.NotaDebitoC;
+        TipoComprobante.NotaDebitoA  or TipoComprobante.NotaDebitoB  or TipoComprobante.NotaDebitoC;
 
-    private static ComprobanteAfip BuildAfipRequest(
+    // Fix 2: mapear TODAS las alícuotas, no solo 21% y 10.5%
+    public static ComprobanteAfip BuildAfipRequest(
         string cuitEmisor, Comprobante comp, long numero, List<ItemComprobante> items)
     {
-        var neto21 = items.Where(i => i.Alicuota == AlicuotaIva.Porcentaje21).Sum(i => i.SubtotalNeto);
-        var iva21 = items.Where(i => i.Alicuota == AlicuotaIva.Porcentaje21).Sum(i => i.Iva);
-        var neto105 = items.Where(i => i.Alicuota == AlicuotaIva.Porcentaje10_5).Sum(i => i.SubtotalNeto);
-        var iva105 = items.Where(i => i.Alicuota == AlicuotaIva.Porcentaje10_5).Sum(i => i.Iva);
-        var exento = items.Where(i => i.Alicuota == AlicuotaIva.Exento).Sum(i => i.SubtotalNeto);
+        var alicuotas = items
+            .Where(i => i.Alicuota != AlicuotaIva.Exento && i.Alicuota != AlicuotaIva.Porcentaje0)
+            .GroupBy(i => i.Alicuota)
+            .Select(g => new AlicuotaAfipDetalle(
+                (int)g.Key,
+                g.Sum(i => i.SubtotalNeto),
+                g.Sum(i => i.Iva)))
+            .ToList();
+
+        var exento = items
+            .Where(i => i.Alicuota is AlicuotaIva.Exento or AlicuotaIva.Porcentaje0)
+            .Sum(i => i.SubtotalNeto);
 
         return new ComprobanteAfip(
             cuitEmisor,
@@ -114,9 +123,8 @@ public class EmitirFacturaCommandHandler : IRequestHandler<EmitirFacturaCommand,
             numero,
             comp.Fecha,
             comp.CuitCliente,
-            neto21, iva21,
-            neto105, iva105,
             exento,
-            comp.Total);
+            comp.Total,
+            alicuotas);
     }
 }

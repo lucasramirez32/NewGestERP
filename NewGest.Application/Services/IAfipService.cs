@@ -13,6 +13,12 @@ public record CaeResponse(string CodigoCae, DateOnly FechaVencimiento, string Nu
 
 public record PuntoVentaAfip(int Numero, string Descripcion, bool Bloqueado);
 
+/// <summary>
+/// Desglose por alícuota para enviar a AFIP (id = código AFIP, BaseImp = neto, Importe = IVA).
+/// Códigos AFIP: Exento=3, 0%=3, 2.5%=9, 5%=8, 10.5%=4, 21%=5, 27%=6
+/// </summary>
+public record AlicuotaAfipDetalle(int IdAfip, decimal BaseImponible, decimal Importe);
+
 public record ComprobanteAfip(
     string CuitEmisor,
     TipoComprobante Tipo,
@@ -21,10 +27,7 @@ public record ComprobanteAfip(
     long NumeroHasta,
     DateOnly FechaComprobante,
     string? CuitReceptor,
-    decimal TotalNeto21,
-    decimal Iva21,
-    decimal TotalNeto105,
-    decimal Iva105,
     decimal TotalExento,
-    decimal TotalComprobante
+    decimal TotalComprobante,
+    IReadOnlyList<AlicuotaAfipDetalle> Alicuotas
 );

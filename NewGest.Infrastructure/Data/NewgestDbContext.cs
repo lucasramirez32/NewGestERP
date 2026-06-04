@@ -32,6 +32,7 @@ public class NewgestDbContext : IdentityDbContext<ApplicationUser, ApplicationRo
     // Comercial — Comprobantes (Facturación)
     public DbSet<Comprobante> Comprobantes => Set<Comprobante>();
     public DbSet<ItemComprobante> ItemsComprobante => Set<ItemComprobante>();
+    public DbSet<NumeradorComprobante> NumeradoresComprobante => Set<NumeradorComprobante>();
 
     // Comercial — Pedidos y Remitos
     public DbSet<Pedido> Pedidos => Set<Pedido>();

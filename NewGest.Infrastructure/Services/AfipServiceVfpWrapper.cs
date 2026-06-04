@@ -40,12 +40,14 @@ public class AfipServiceVfpWrapper : IAfipService
                 numeroHasta = comprobante.NumeroHasta,
                 fecha = comprobante.FechaComprobante.ToString("yyyyMMdd"),
                 cuitReceptor = comprobante.CuitReceptor,
-                totalNeto21 = comprobante.TotalNeto21,
-                iva21 = comprobante.Iva21,
-                totalNeto105 = comprobante.TotalNeto105,
-                iva105 = comprobante.Iva105,
                 totalExento = comprobante.TotalExento,
                 totalComprobante = comprobante.TotalComprobante,
+                alicuotas = comprobante.Alicuotas.Select(a => new
+                {
+                    idAfip = a.IdAfip,
+                    baseImponible = a.BaseImponible,
+                    importe = a.Importe
+                }),
                 outputFile
             };
 
