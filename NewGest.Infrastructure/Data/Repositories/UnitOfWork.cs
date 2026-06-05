@@ -16,9 +16,14 @@ public class UnitOfWork : IUnitOfWork
     }
 
     /// <summary>
-    /// Persiste cambios y luego despacha domain events de todos los aggregates rastreados.
-    /// Los eventos se despachan DESPUÉS del commit para que los handlers asuman
-    /// datos ya persistidos. Si SaveChanges falla, los handlers no se ejecutan.
+    /// Persiste cambios y despacha domain events dentro de una única transacción de BD.
+    /// Flujo:
+    ///   1. BEGIN TRANSACTION
+    ///   2. SaveChanges  (persiste el aggregate principal, ej: Comprobante)
+    ///   3. Despachar domain events (los handlers pueden hacer AddAsync de entidades nuevas, ej: Asiento)
+    ///   4. SaveChanges  (persiste los side-effects de los handlers)
+    ///   5. COMMIT
+    /// Si cualquier paso falla, ROLLBACK garantiza atomicidad total.
     /// </summary>
     public async Task<int> CommitAsync(CancellationToken ct = default)
     {
@@ -29,14 +34,30 @@ public class UnitOfWork : IUnitOfWork
 
         var events = aggregates.SelectMany(a => a.DomainEvents).ToList();
 
-        var result = await _db.SaveChangesAsync(ct);
+        // Sin events: commit simple sin transacción explícita (path habitual)
+        if (events.Count == 0)
+            return await _db.SaveChangesAsync(ct);
 
-        foreach (var a in aggregates)
-            a.ClearDomainEvents();
+        await using var tx = await _db.Database.BeginTransactionAsync(ct);
+        try
+        {
+            var result = await _db.SaveChangesAsync(ct);
 
-        if (events.Count > 0)
+            foreach (var a in aggregates)
+                a.ClearDomainEvents();
+
+            // Los handlers pueden AddAsync nuevas entidades (ej: Asiento);
+            // el segundo SaveChanges las persiste dentro de la misma transacción.
             await _dispatcher.DispatchAsync(events, ct);
+            await _db.SaveChangesAsync(ct);
 
-        return result;
+            await tx.CommitAsync(ct);
+            return result;
+        }
+        catch
+        {
+            await tx.RollbackAsync(ct);
+            throw;
+        }
     }
 }

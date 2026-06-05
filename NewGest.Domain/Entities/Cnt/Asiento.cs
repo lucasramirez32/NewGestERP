@@ -64,7 +64,7 @@ public class Asiento : AggregateRoot
     public void Anular()
     {
         if (Anulado) throw new DomainException("El asiento ya está anulado.");
-        if (TipoAsiento != TipoAsiento.Manual)
+        if (this.TipoAsiento != TipoAsiento.Manual)
             throw new DomainException("Solo se pueden anular asientos manuales.");
         Anulado = true;
     }

@@ -103,10 +103,14 @@ public class AsientoTests
         a.Anulado.Should().BeTrue();
     }
 
-    [Fact]
-    public void Anular_asiento_autoFactura_lanza_DomainException()
+    // Bug #1: verificar que TODOS los tipos no-manual no se pueden anular
+    [Theory]
+    [InlineData(TipoAsiento.AutoFactura)]
+    [InlineData(TipoAsiento.AutoPago)]
+    [InlineData(TipoAsiento.AutoAjuste)]
+    public void Anular_asiento_no_manual_lanza_DomainException(TipoAsiento tipo)
     {
-        var a = Asiento.Crear(1, 1, new DateOnly(2026, 6, 5), "Auto", TipoAsiento.AutoFactura);
+        var a = Asiento.Crear(1, 1, new DateOnly(2026, 6, 5), "Auto", tipo);
         a.AgregarPartida(10, 100m, 0);
         a.AgregarPartida(20, 0, 100m);
 
