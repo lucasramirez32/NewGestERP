@@ -104,6 +104,7 @@ app.MapPedidosEndpoints();
 app.MapPersonalEndpoints();
 app.MapComprobantesEndpoints();
 app.MapContabilidadEndpoints();
+app.MapReportesEndpoints();
 
 app.Run();
 

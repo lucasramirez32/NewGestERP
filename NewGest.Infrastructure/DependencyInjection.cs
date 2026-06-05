@@ -73,6 +73,10 @@ public static class DependencyInjection
         services.AddScoped<IQrFiscalService, QrFiscalService>();
         services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
 
+        // Servicios de reportes — Sprint 16-18
+        services.AddScoped<IReportService, Reports.ReportService>();
+        services.AddScoped<IExcelExportService, Reports.ExcelExportService>();
+
         return services;
     }
 }
