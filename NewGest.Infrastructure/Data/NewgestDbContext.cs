@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using NewGest.Domain.Entities.Cnt;
 using NewGest.Domain.Entities.Com;
 using NewGest.Domain.Entities.Config;
 using NewGest.Domain.Entities.Empresas;
@@ -28,6 +29,11 @@ public class NewgestDbContext : IdentityDbContext<ApplicationUser, ApplicationRo
     public DbSet<Deposito> Depositos => Set<Deposito>();
     public DbSet<ExistenciaDeposito> ExistenciasDeposito => Set<ExistenciaDeposito>();
     public DbSet<MovimientoStock> MovimientosStock => Set<MovimientoStock>();
+
+    // Contabilidad
+    public DbSet<CuentaContable> CuentasContables => Set<CuentaContable>();
+    public DbSet<Asiento> Asientos => Set<Asiento>();
+    public DbSet<PartidaAsiento> PartidasAsiento => Set<PartidaAsiento>();
 
     // Comercial — Comprobantes (Facturación)
     public DbSet<Comprobante> Comprobantes => Set<Comprobante>();

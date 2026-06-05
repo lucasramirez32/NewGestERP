@@ -60,6 +60,10 @@ public static class DependencyInjection
         // Repositorios — Sprint 8-11 (facturación)
         services.AddScoped<IComprobanteRepository, ComprobanteRepository>();
 
+        // Repositorios — Sprint 14-15 (contabilidad)
+        services.AddScoped<ICuentaContableRepository, CuentaContableRepository>();
+        services.AddScoped<IAsientoRepository, AsientoRepository>();
+
         // Servicios de infraestructura
         services.AddScoped<IJwtService, JwtService>();
         services.AddHttpContextAccessor();
@@ -67,6 +71,7 @@ public static class DependencyInjection
         services.AddScoped<IStockService, StockService>();
         services.AddScoped<IAfipService, AfipServiceVfpWrapper>();
         services.AddScoped<IQrFiscalService, QrFiscalService>();
+        services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
 
         return services;
     }

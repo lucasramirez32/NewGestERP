@@ -2,4 +2,4 @@ using NewGest.Domain.Common;
 
 namespace NewGest.Domain.Events;
 
-public record CaeAsignadoEvent(int IdComprobante, string CodigoCae) : IDomainEvent;
+public record CaeAsignadoEvent(int IdComprobante, int IdEmpresa, string CodigoCae) : IDomainEvent;

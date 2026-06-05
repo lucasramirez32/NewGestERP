@@ -79,7 +79,7 @@ public class Comprobante : AggregateRoot
             throw new DomainException("El comprobante ya tiene un CAE asignado.");
 
         Cae = new CaeInfo(codigoCae, fechaVencimiento);
-        AddDomainEvent(new CaeAsignadoEvent(IdComprobante, codigoCae));
+        AddDomainEvent(new CaeAsignadoEvent(IdComprobante, IdEmpresa, codigoCae));
     }
 
     public void Anular()
