@@ -103,6 +103,7 @@ app.MapStockEndpoints();
 app.MapPedidosEndpoints();
 app.MapPersonalEndpoints();
 app.MapComprobantesEndpoints();
+app.MapContabilidadEndpoints();
 
 app.Run();
 

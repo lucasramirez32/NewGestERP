@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Asientos Contables — NewGest</title>
+  <link rel="stylesheet" href="/css/output.css" />
+</head>
+<body class="bg-gray-50 font-sans">
+  <main class="ml-64 p-8">
+    <div class="flex items-center justify-between mb-6">
+      <h1 class="text-2xl font-bold text-gray-800">Asientos Contables</h1>
+      <button id="btn-nuevo" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium">
+        + Asiento manual
+      </button>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+      <table class="w-full text-sm">
+        <thead class="bg-gray-50 border-b border-gray-200 text-xs font-medium text-gray-500 uppercase tracking-wider">
+          <tr>
+            <th class="px-4 py-3 text-left">Número</th>
+            <th class="px-4 py-3 text-left">Fecha</th>
+            <th class="px-4 py-3 text-left">Descripción</th>
+            <th class="px-4 py-3 text-center">Tipo</th>
+            <th class="px-4 py-3 text-right">Debe</th>
+            <th class="px-4 py-3 text-right">Haber</th>
+          </tr>
+        </thead>
+        <tbody id="tabla-asientos" class="divide-y divide-gray-100"></tbody>
+      </table>
+      <p id="sin-asientos" class="hidden text-center text-gray-400 text-sm py-8">Sin asientos.</p>
+    </div>
+
+    <!-- Paginación -->
+    <div id="paginacion" class="flex justify-center gap-2 mt-4"></div>
+  </main>
+
+  <!-- Modal asiento manual -->
+  <dialog id="modal-asiento" class="rounded-xl shadow-2xl p-0 w-full max-w-2xl backdrop:bg-black/40">
+    <div class="p-6">
+      <h2 class="text-lg font-bold text-gray-800 mb-4">Nuevo asiento manual</h2>
+      <form id="form-asiento" class="space-y-4">
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-medium text-gray-600 mb-1">Fecha</label>
+            <input id="fecha" name="fecha" type="date" required
+              class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500" />
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-gray-600 mb-1">Descripción</label>
+            <input id="descripcion" name="descripcion" type="text" required
+              class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500" />
+          </div>
+        </div>
+
+        <!-- Partidas -->
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <span class="text-sm font-medium text-gray-700">Partidas</span>
+            <button type="button" id="btn-agregar-partida"
+              class="text-xs text-blue-600 hover:text-blue-800 font-medium">+ Agregar partida</button>
+          </div>
+          <table class="w-full text-sm border border-gray-200 rounded-lg overflow-hidden">
+            <thead class="bg-gray-50 text-xs text-gray-500">
+              <tr>
+                <th class="px-3 py-2 text-left">ID Cuenta</th>
+                <th class="px-3 py-2 text-right">Debe</th>
+                <th class="px-3 py-2 text-right">Haber</th>
+                <th class="px-3 py-2 text-left">Concepto</th>
+                <th class="px-3 py-2 w-8"></th>
+              </tr>
+            </thead>
+            <tbody id="tabla-partidas" class="divide-y divide-gray-100"></tbody>
+          </table>
+        </div>
+
+        <!-- Totales -->
+        <div class="flex justify-end gap-8 text-sm font-medium">
+          <span>Total Debe: <span id="total-debe" class="font-mono text-blue-600">$ 0,00</span></span>
+          <span>Total Haber: <span id="total-haber" class="font-mono text-blue-600">$ 0,00</span></span>
+          <span id="estado-cuadre" class="text-gray-400">Sin partidas</span>
+        </div>
+
+        <p id="msg-error-asiento" class="hidden text-xs text-red-600 bg-red-50 p-2 rounded"></p>
+        <div class="flex justify-end gap-3 pt-2">
+          <button type="button"
+            class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm"
+            onclick="document.getElementById('modal-asiento').close()">Cancelar</button>
+          <button type="submit" id="btn-guardar-asiento"
+            class="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white px-4 py-2 rounded-lg text-sm font-medium">
+            Registrar asiento
+          </button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+  <script type="module" src="/js/pages/contabilidad/asientos.js"></script>
+</body>
+</html>
