@@ -77,6 +77,12 @@ public static class DependencyInjection
         services.AddScoped<IReportService, Reports.ReportService>();
         services.AddScoped<IExcelExportService, Reports.ExcelExportService>();
 
+        // Servicios de integraciones — Sprint 19-20
+        services.AddScoped<IEmailService, Email.MailKitEmailService>();
+        services.AddScoped<IWhatsAppService, Email.WhatsAppService>();
+        services.AddScoped<IWordExportService, Email.WordExportService>();
+        services.AddHttpClient("WhatsApp");
+
         return services;
     }
 }

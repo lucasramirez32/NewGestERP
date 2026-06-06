@@ -20,6 +20,7 @@ public class GetComprobantesQueryHandler : IRequestHandler<GetComprobantesQuery,
 
     internal static ComprobanteDto ToDto(Comprobante c) => new(
         c.IdComprobante,
+        c.IdCliente,
         c.Tipo.ToString(),
         c.PuntoVenta,
         c.Numero,

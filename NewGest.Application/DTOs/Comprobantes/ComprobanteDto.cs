@@ -2,6 +2,7 @@ namespace NewGest.Application.DTOs.Comprobantes;
 
 public record ComprobanteDto(
     int IdComprobante,
+    int IdCliente,
     string Tipo,
     int PuntoVenta,
     long Numero,
