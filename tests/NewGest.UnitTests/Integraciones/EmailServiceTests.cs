@@ -38,22 +38,36 @@ public class EmailServiceTests
     }
 
     // ─── WhatsApp normalización de teléfono ───────────────────────────────────
+    // Fix BUG-5: expected sin espacios, valores exactos validados contra la implementación
+    // NormalizarTelefono: quita no-dígitos, agrega prefijo 549 si no está presente
     [Theory]
-    [InlineData("011-1234-5678",  "549111234 5678")]   // formato local
-    [InlineData("1134567890",     "5491134567890")]    // sin prefijo país
-    [InlineData("5491134567890",  "5491134567890")]    // ya en E.164
-    [InlineData("541134567890",   "5491134567890")]    // con 54 pero sin 9
-    [InlineData("01134567890",    "5491134567890")]    // con 0 inicial
+    [InlineData("011-1234-5678", "5491112345678")]  // 011... → quita 0, agrega 549
+    [InlineData("1134567890",    "5491134567890")]  // sin prefijo → agrega 549
+    [InlineData("5491134567890", "5491134567890")]  // ya en E.164 — no cambia
+    [InlineData("541134567890",  "5491134567890")]  // 54 sin 9 → agrega 9
+    [InlineData("01134567890",   "5491134567890")]  // con 0 inicial → quita 0, agrega 549
     public void WhatsApp_normaliza_telefono_a_E164(string entrada, string esperado)
     {
-        // Accedemos al método privado via reflexión para verificar la normalización
-        var tipo   = typeof(WhatsAppService);
-        var metodo = tipo.GetMethod("NormalizarTelefono",
+        var metodo = typeof(WhatsAppService).GetMethod("NormalizarTelefono",
             System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
 
         var resultado = (string?)metodo!.Invoke(null, [entrada]);
 
-        resultado.Should().Be(esperado.Replace(" ", ""));
+        resultado.Should().NotContain(" ", "E.164 no permite espacios");
+        resultado.Should().StartWith("549", "número argentino debe comenzar con 549");
+        resultado.Should().Be(esperado);
+    }
+
+    [Theory]
+    [InlineData("011-1234-5678")]
+    [InlineData("1134567890")]
+    [InlineData("5491134567890")]
+    public void WhatsApp_normaliza_telefono_siempre_empieza_con_549(string entrada)
+    {
+        var metodo = typeof(WhatsAppService).GetMethod("NormalizarTelefono",
+            System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic);
+        var resultado = (string?)metodo!.Invoke(null, [entrada]);
+        resultado.Should().StartWith("549");
     }
 
     // ─── WordExportService ────────────────────────────────────────────────────

@@ -24,7 +24,9 @@ public class WhatsAppService : IWhatsAppService
         _http = httpFactory.CreateClient("WhatsApp");
         var token = config["WhatsApp:AccessToken"]
             ?? throw new InvalidOperationException("WhatsApp:AccessToken no configurado.");
-        _phoneNumberId      = config["WhatsApp:PhoneNumberId"]   ?? throw new InvalidOperationException("WhatsApp:PhoneNumberId no configurado.");
+        // Fix BUG-1: eliminar barra inicial si el operador la configura por error
+        _phoneNumberId = (config["WhatsApp:PhoneNumberId"] ?? throw new InvalidOperationException("WhatsApp:PhoneNumberId no configurado."))
+            .TrimStart('/');
         _templateComprobante = config["WhatsApp:TemplateComprobante"] ?? "comprobante_disponible";
 
         _http.BaseAddress = new Uri("https://graph.facebook.com/v19.0/");

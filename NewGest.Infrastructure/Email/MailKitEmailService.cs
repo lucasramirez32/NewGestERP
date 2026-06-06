@@ -49,9 +49,12 @@ public class MailKitEmailService : IEmailService
         email.Body = builder.ToMessageBody();
 
         using var smtp = new SmtpClient();
+        // Fix BUG-3: StartTlsWhenAvailable acepta conexiones sin cifrado si el servidor
+        // no anuncia STARTTLS — credenciales SMTP quedarían en claro.
+        // StartTls fuerza el upgrade y falla si el servidor no lo soporta.
         var secureOption = _config.UsarSsl
             ? SecureSocketOptions.SslOnConnect
-            : SecureSocketOptions.StartTlsWhenAvailable;
+            : SecureSocketOptions.StartTls;
 
         await smtp.ConnectAsync(_config.HostSmtp, _config.Puerto, secureOption, ct);
         await smtp.AuthenticateAsync(_config.UsuarioSmtp, _config.PasswordSmtp, ct);

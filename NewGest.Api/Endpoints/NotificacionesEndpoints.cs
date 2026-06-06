@@ -25,10 +25,15 @@ public static class NotificacionesEndpoints
             IReportService reportService,
             IQrFiscalService qrService,
             IEmpresaRepository empresasRepo,
+            Microsoft.Extensions.Configuration.IConfiguration config,
             CancellationToken ct) =>
         {
             var comp    = await m.Send(new GetComprobanteByIdQuery(dto.IdComprobante, cu.IdEmpresa), ct);
             if (comp is null) return Results.NotFound("Comprobante no encontrado.");
+
+            // Fix BUG-2: URL absoluta HTTPS para que Meta Cloud API pueda acceder al PDF.
+            // App:BaseUrl debe configurarse en appsettings.Production.json (ej: "https://erp.miempresa.com")
+            var baseUrl = (config["App:BaseUrl"] ?? "").TrimEnd('/');
 
             var empresa = await empresasRepo.ObtenerPorIdAsync(cu.IdEmpresa, ct);
             var cliente = await m.Send(new GetClienteByIdQuery(comp.IdCliente, cu.IdEmpresa), ct);
@@ -114,8 +119,10 @@ public static class NotificacionesEndpoints
                     try
                     {
                         var numeroFactura = $"{comp.PuntoVenta:D4}-{comp.Numero:D8}";
-                        // URL pública del PDF (requiere HTTPS configurado en producción)
-                        var urlPdf = $"/api/reportes/comprobantes/{comp.IdComprobante}/pdf";
+                        // Fix BUG-2: URL absoluta HTTPS — relativa no es válida para Meta Cloud API
+                        if (string.IsNullOrEmpty(baseUrl))
+                            throw new InvalidOperationException("App:BaseUrl no configurado. Requerido para envío por WhatsApp.");
+                        var urlPdf = $"{baseUrl}/api/reportes/comprobantes/{comp.IdComprobante}/pdf";
                         await whatsAppService.EnviarComprobanteAsync(telefono, urlPdf, numeroFactura, ct);
                         whatsAppEnviado = true;
                     }

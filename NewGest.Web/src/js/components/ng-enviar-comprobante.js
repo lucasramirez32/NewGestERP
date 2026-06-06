@@ -74,7 +74,7 @@ class NgEnviarComprobante extends HTMLElement {
             <input type="checkbox" id="chk-email" checked />
             Enviar por Email
           </label>
-          <div class="campo">
+          <div class="campo" id="campo-email">
             <label for="email-dest">Destinatario</label>
             <input type="email" id="email-dest" placeholder="cliente@ejemplo.com" />
           </div>
@@ -83,7 +83,7 @@ class NgEnviarComprobante extends HTMLElement {
             <input type="checkbox" id="chk-whatsapp" />
             Enviar por WhatsApp
           </label>
-          <div class="campo">
+          <div class="campo" id="campo-whatsapp" style="display:none">
             <label for="telefono-dest">Teléfono (con código de área)</label>
             <input type="tel" id="telefono-dest" placeholder="011-1234-5678" />
           </div>
@@ -105,18 +105,25 @@ class NgEnviarComprobante extends HTMLElement {
 
     sr.querySelector('#btn-enviar').addEventListener('click', () => this._enviar());
 
-    // Mostrar/ocultar campo según checkbox
-    const toggleCampo = (chk, campo) =>
-      sr.querySelector(chk).addEventListener('change', e =>
-        sr.querySelector(campo).style.display = e.target.checked ? 'flex' : 'none');
-    toggleCampo('#chk-email',    '.campo:nth-child(2)');
-    toggleCampo('#chk-whatsapp', '.campo:nth-child(4)');
+    // Fix BUG-4: IDs dedicados en vez de nth-child (robusto ante cambios en el DOM)
+    const toggleCampo = (chkId, campoId) =>
+      sr.querySelector(chkId).addEventListener('change', e =>
+        sr.querySelector(campoId).style.display = e.target.checked ? 'flex' : 'none');
+    toggleCampo('#chk-email',    '#campo-email');
+    toggleCampo('#chk-whatsapp', '#campo-whatsapp');
   }
 
   async _enviar() {
     const sr        = this.shadowRoot;
     const btnEnviar = sr.querySelector('#btn-enviar');
     const msgEl     = sr.querySelector('#msg-resultado');
+
+    // Fix BUG-5 (guard): asegurar que abrir() fue llamado con un ID válido
+    if (!this._idComprobante) {
+      msgEl.textContent = 'Error interno: no hay comprobante seleccionado.';
+      msgEl.className = 'msg err';
+      return;
+    }
 
     const enviarEmail    = sr.querySelector('#chk-email').checked;
     const enviarWhatsApp = sr.querySelector('#chk-whatsapp').checked;
