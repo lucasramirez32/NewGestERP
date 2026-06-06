@@ -74,7 +74,7 @@ public class ExcelExportService : IExcelExportService
         foreach (var m in datos)
         {
             ws.Cell(row, 1).Value = m.Fecha.ToDateTime(TimeOnly.MinValue);
-            ws.Cell(row, 1).Style.DateFormat.Format = "dd/mm/yyyy";
+            ws.Cell(row, 1).Style.DateFormat.Format = "dd/MM/yyyy";
             ws.Cell(row, 2).Value = m.Articulo;
             ws.Cell(row, 3).Value = m.Deposito;
             ws.Cell(row, 4).Value = m.Tipo;
@@ -99,7 +99,11 @@ public class ExcelExportService : IExcelExportService
         ws.Cell(1, 1).Style.Font.FontSize = 12;
         ws.Cell(2, 1).Value = $"CUIT: {datos.CuitEmpresa}  |  Período: {datos.Mes:D2}/{datos.Anio}";
 
-        string[] headers = ["Fecha", "Comprobante", "Razón Social", "CUIT", "Neto", "IVA", "Total"];
+        // Fix BUG-03: columnas desgloseadas por alícuota (RG AFIP 3685/2014)
+        string[] headers = [
+            "Fecha", "Comprobante", "Razón Social", "CUIT",
+            "Neto 21%", "IVA 21%", "Neto 10,5%", "IVA 10,5%", "Exento", "Total"
+        ];
         for (var i = 0; i < headers.Length; i++)
             ws.Cell(4, i + 1).Value = headers[i];
         EstilarEncabezado(ws.Range(4, 1, 4, headers.Length));
@@ -108,14 +112,17 @@ public class ExcelExportService : IExcelExportService
         foreach (var l in datos.Lineas)
         {
             ws.Cell(row, 1).Value = l.Fecha.ToDateTime(TimeOnly.MinValue);
-            ws.Cell(row, 1).Style.DateFormat.Format = "dd/mm/yyyy";
+            ws.Cell(row, 1).Style.DateFormat.Format = "dd/MM/yyyy";
             ws.Cell(row, 2).Value = l.Comprobante;
             ws.Cell(row, 3).Value = l.RazonSocial;
             ws.Cell(row, 4).Value = l.Cuit ?? "";
-            ws.Cell(row, 5).Value = l.Neto;
-            ws.Cell(row, 6).Value = l.Iva;
-            ws.Cell(row, 7).Value = l.Total;
-            foreach (var col in new[] { 5, 6, 7 })
+            ws.Cell(row, 5).Value = l.Neto21;
+            ws.Cell(row, 6).Value = l.Iva21;
+            ws.Cell(row, 7).Value = l.Neto105;
+            ws.Cell(row, 8).Value = l.Iva105;
+            ws.Cell(row, 9).Value = l.Exento;
+            ws.Cell(row, 10).Value = l.Total;
+            foreach (var col in new[] { 5, 6, 7, 8, 9, 10 })
                 ws.Cell(row, col).Style.NumberFormat.Format = "#,##0.00";
             row++;
         }
@@ -123,10 +130,13 @@ public class ExcelExportService : IExcelExportService
         // Totales
         ws.Cell(row, 4).Value = "TOTALES";
         ws.Cell(row, 4).Style.Font.Bold = true;
-        ws.Cell(row, 5).Value = datos.TotalNeto;
-        ws.Cell(row, 6).Value = datos.TotalIva;
-        ws.Cell(row, 7).Value = datos.TotalGeneral;
-        foreach (var col in new[] { 5, 6, 7 })
+        ws.Cell(row, 5).Value  = datos.TotalNeto21;
+        ws.Cell(row, 6).Value  = datos.TotalIva21;
+        ws.Cell(row, 7).Value  = datos.TotalNeto105;
+        ws.Cell(row, 8).Value  = datos.TotalIva105;
+        ws.Cell(row, 9).Value  = datos.TotalExento;
+        ws.Cell(row, 10).Value = datos.TotalGeneral;
+        foreach (var col in new[] { 5, 6, 7, 8, 9, 10 })
         {
             ws.Cell(row, col).Style.Font.Bold = true;
             ws.Cell(row, col).Style.NumberFormat.Format = "#,##0.00";

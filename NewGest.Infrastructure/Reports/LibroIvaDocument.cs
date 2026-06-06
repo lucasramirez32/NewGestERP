@@ -7,6 +7,7 @@ namespace NewGest.Infrastructure.Reports;
 
 /// <summary>
 /// PDF del Libro IVA Ventas o Compras (regulatorio — RG AFIP 3685/2014).
+/// Fix BUG-03: columnas desgloseadas por alícuota: Neto21/IVA21/Neto105/IVA105/Exento/Total.
 /// Reemplaza los reportes LIBROIVA*.FRX del sistema VFP.
 /// </summary>
 public class LibroIvaDocument : IDocument
@@ -22,17 +23,16 @@ public class LibroIvaDocument : IDocument
         container.Page(page =>
         {
             page.Size(PageSizes.A4.Landscape());
-            page.Margin(1.5f, Unit.Centimetre);
-            page.DefaultTextStyle(x => x.FontSize(8).FontFamily(Fonts.Arial));
+            page.Margin(1.2f, Unit.Centimetre);
+            page.DefaultTextStyle(x => x.FontSize(7.5f).FontFamily(Fonts.Arial));
 
             page.Content().Column(col =>
             {
-                // Encabezado
                 col.Item().Row(row =>
                 {
                     row.RelativeItem().Column(c =>
                     {
-                        c.Item().Text($"Libro IVA {_d.TipoLibro}").Bold().FontSize(13);
+                        c.Item().Text($"Libro IVA {_d.TipoLibro}").Bold().FontSize(12);
                         c.Item().Text($"{_d.NombreEmpresa} — CUIT: {_d.CuitEmpresa}");
                         c.Item().Text($"Período: {_d.Mes:D2}/{_d.Anio}");
                     });
@@ -42,26 +42,32 @@ public class LibroIvaDocument : IDocument
                 {
                     t.ColumnsDefinition(c =>
                     {
-                        c.ConstantColumn(55);   // Fecha
+                        c.ConstantColumn(48);   // Fecha
                         c.RelativeColumn(2);    // Comprobante
                         c.RelativeColumn(3);    // Razón Social
-                        c.ConstantColumn(85);   // CUIT
-                        c.ConstantColumn(70);   // Neto
-                        c.ConstantColumn(60);   // IVA
-                        c.ConstantColumn(70);   // Total
+                        c.ConstantColumn(78);   // CUIT
+                        c.ConstantColumn(58);   // Neto 21%
+                        c.ConstantColumn(52);   // IVA 21%
+                        c.ConstantColumn(58);   // Neto 10,5%
+                        c.ConstantColumn(52);   // IVA 10,5%
+                        c.ConstantColumn(52);   // Exento
+                        c.ConstantColumn(62);   // Total
                     });
 
                     t.Header(h =>
                     {
                         static IContainer Hdr(IContainer c) =>
-                            c.Background(Colors.Grey.Lighten3).Padding(3);
+                            c.Background(Colors.Grey.Lighten3).Padding(2);
 
                         h.Cell().Element(Hdr).Text("Fecha").SemiBold();
                         h.Cell().Element(Hdr).Text("Comprobante").SemiBold();
                         h.Cell().Element(Hdr).Text("Razón Social").SemiBold();
                         h.Cell().Element(Hdr).Text("CUIT").SemiBold();
-                        h.Cell().Element(Hdr).AlignRight().Text("Neto").SemiBold();
-                        h.Cell().Element(Hdr).AlignRight().Text("IVA").SemiBold();
+                        h.Cell().Element(Hdr).AlignRight().Text("Neto 21%").SemiBold();
+                        h.Cell().Element(Hdr).AlignRight().Text("IVA 21%").SemiBold();
+                        h.Cell().Element(Hdr).AlignRight().Text("Neto 10,5%").SemiBold();
+                        h.Cell().Element(Hdr).AlignRight().Text("IVA 10,5%").SemiBold();
+                        h.Cell().Element(Hdr).AlignRight().Text("Exento").SemiBold();
                         h.Cell().Element(Hdr).AlignRight().Text("Total").SemiBold();
                     });
 
@@ -69,20 +75,25 @@ public class LibroIvaDocument : IDocument
                     {
                         t.Cell().Padding(2).Text(l.Fecha.ToString("dd/MM/yy"));
                         t.Cell().Padding(2).Text(l.Comprobante);
-                        t.Cell().Padding(2).Text(l.RazonSocial).Italic();
+                        t.Cell().Padding(2).Text(l.RazonSocial);
                         t.Cell().Padding(2).Text(l.Cuit ?? "");
-                        t.Cell().Padding(2).AlignRight().Text($"{l.Neto:N2}");
-                        t.Cell().Padding(2).AlignRight().Text($"{l.Iva:N2}");
-                        t.Cell().Padding(2).AlignRight().Text($"{l.Total:N2}");
+                        t.Cell().Padding(2).AlignRight().Text(l.Neto21 > 0 ? $"{l.Neto21:N2}" : "");
+                        t.Cell().Padding(2).AlignRight().Text(l.Iva21  > 0 ? $"{l.Iva21:N2}"  : "");
+                        t.Cell().Padding(2).AlignRight().Text(l.Neto105 > 0 ? $"{l.Neto105:N2}" : "");
+                        t.Cell().Padding(2).AlignRight().Text(l.Iva105  > 0 ? $"{l.Iva105:N2}"  : "");
+                        t.Cell().Padding(2).AlignRight().Text(l.Exento  > 0 ? $"{l.Exento:N2}"  : "");
+                        t.Cell().Padding(2).AlignRight().Text($"{l.Total:N2}").Bold();
                     }
 
-                    // Totales
                     static IContainer TotalCell(IContainer c) =>
-                        c.Background(Colors.Grey.Lighten3).BorderTop(1).BorderColor(Colors.Grey.Medium).Padding(3);
+                        c.Background(Colors.Grey.Lighten3).BorderTop(1).BorderColor(Colors.Grey.Medium).Padding(2);
 
                     t.Cell().ColumnSpan(4).Element(TotalCell).Text("TOTALES").Bold();
-                    t.Cell().Element(TotalCell).AlignRight().Text($"{_d.TotalNeto:N2}").Bold();
-                    t.Cell().Element(TotalCell).AlignRight().Text($"{_d.TotalIva:N2}").Bold();
+                    t.Cell().Element(TotalCell).AlignRight().Text($"{_d.TotalNeto21:N2}").Bold();
+                    t.Cell().Element(TotalCell).AlignRight().Text($"{_d.TotalIva21:N2}").Bold();
+                    t.Cell().Element(TotalCell).AlignRight().Text($"{_d.TotalNeto105:N2}").Bold();
+                    t.Cell().Element(TotalCell).AlignRight().Text($"{_d.TotalIva105:N2}").Bold();
+                    t.Cell().Element(TotalCell).AlignRight().Text($"{_d.TotalExento:N2}").Bold();
                     t.Cell().Element(TotalCell).AlignRight().Text($"{_d.TotalGeneral:N2}").Bold();
                 });
             });

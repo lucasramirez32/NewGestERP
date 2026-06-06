@@ -106,14 +106,17 @@ public class ComprobanteDocument : IDocument
                 // Totales (derecha) + QR (izquierda)
                 col.Item().PaddingTop(6).Row(row =>
                 {
-                    // QR fiscal
+                    // QR fiscal — Fix BUG-01: renderizar imagen PNG generada por IQrFiscalService
                     row.RelativeItem(2).Column(c =>
                     {
-                        if (_d.QrUrl is not null && _d.CodigoCae is not null)
+                        if (_d.CodigoCae is not null)
                         {
                             c.Item().Text("Comprobante Electrónico").SemiBold().FontSize(8);
                             c.Item().Text($"CAE: {_d.CodigoCae}").FontSize(8);
                             c.Item().Text($"Vence: {_d.VencimientoCae:dd/MM/yyyy}").FontSize(8);
+
+                            if (_d.QrPngBytes is { Length: > 0 })
+                                c.Item().Width(70).Height(70).Image(_d.QrPngBytes);
                         }
                     });
 

@@ -9,7 +9,7 @@ public record ComprobanteReportDto(
     string CondicionIvaEmpresa,
     string DomicilioEmpresa,
     // Comprobante
-    string TipoLabel,          // "FACTURA B", "NOTA DE CRÉDITO A", etc.
+    string TipoLabel,
     int PuntoVenta,
     long Numero,
     DateOnly Fecha,
@@ -25,10 +25,11 @@ public record ComprobanteReportDto(
     decimal TotalNeto,
     decimal TotalIva,
     decimal Total,
-    // CAE
+    // CAE + QR
     string? CodigoCae,
     DateOnly? VencimientoCae,
-    string? QrUrl
+    string? QrUrl,
+    byte[]? QrPngBytes    // Fix BUG-01: PNG precalculado por el endpoint via IQrFiscalService
 );
 
 public record ItemReportDto(
@@ -49,18 +50,26 @@ public record LibroIvaReportDto(
     int Mes,
     string TipoLibro,
     IReadOnlyList<LineaLibroIvaReportDto> Lineas,
-    decimal TotalNeto,
-    decimal TotalIva,
+    // Fix BUG-03: totales desglosados por alícuota (RG AFIP 3685/2014)
+    decimal TotalNeto21,
+    decimal TotalIva21,
+    decimal TotalNeto105,
+    decimal TotalIva105,
+    decimal TotalExento,
     decimal TotalGeneral
 );
 
+// Fix BUG-03: desglose de alícuotas por línea
 public record LineaLibroIvaReportDto(
     DateOnly Fecha,
     string Comprobante,
     string RazonSocial,
     string? Cuit,
-    decimal Neto,
-    decimal Iva,
+    decimal Neto21,
+    decimal Iva21,
+    decimal Neto105,
+    decimal Iva105,
+    decimal Exento,
     decimal Total
 );
 
