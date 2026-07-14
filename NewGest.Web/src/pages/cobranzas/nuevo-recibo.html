@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nuevo Recibo — NewGest</title>
+  <link rel="stylesheet" href="/css/output.css" />
+</head>
+<body class="bg-gray-50 font-sans">
+  <main class="ml-64 p-8">
+    <div class="flex items-center justify-between mb-6">
+      <h1 class="text-2xl font-bold text-gray-800">Nuevo Recibo de Cobro</h1>
+    </div>
+
+    <form id="form-recibo" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+      <!-- Panel izquierdo: cliente + pendientes + retenciones -->
+      <div class="lg:col-span-2 space-y-5">
+
+        <!-- Cliente -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+          <h2 class="text-sm font-semibold text-gray-700 mb-3">Cliente</h2>
+          <div class="relative">
+            <input id="cliente-search" type="text" placeholder="Buscar cliente..."
+              autocomplete="off"
+              class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500" />
+            <ul id="cliente-dropdown"
+              class="hidden absolute z-10 w-full bg-white border border-gray-200 rounded-lg shadow-lg mt-1 max-h-48 overflow-y-auto text-sm"></ul>
+          </div>
+          <div id="cliente-info" class="hidden mt-2 text-sm text-blue-700 bg-blue-50 rounded p-2">
+            <span id="cliente-nombre" class="font-medium"></span>
+            <input type="hidden" id="id-cliente" />
+          </div>
+        </div>
+
+        <!-- Comprobantes pendientes -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+          <h2 class="text-sm font-semibold text-gray-700 mb-3">Comprobantes pendientes</h2>
+          <table class="w-full text-sm">
+            <thead class="text-xs text-gray-500 border-b border-gray-200">
+              <tr>
+                <th class="pb-2 w-6"></th>
+                <th class="pb-2 text-left">Comprobante</th>
+                <th class="pb-2 text-right">Total</th>
+                <th class="pb-2 text-right">Saldo</th>
+                <th class="pb-2 text-right w-28">Imputar</th>
+              </tr>
+            </thead>
+            <tbody id="tabla-pendientes"></tbody>
+          </table>
+          <p id="sin-pendientes" class="text-center text-gray-400 text-sm py-4">
+            Seleccioná un cliente para ver sus comprobantes pendientes.
+          </p>
+        </div>
+
+        <!-- Medios de pago -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+          <div class="flex items-center justify-between mb-3">
+            <h2 class="text-sm font-semibold text-gray-700">Medios de pago</h2>
+            <div class="flex gap-2">
+              <button type="button" data-tipo="1" class="btn-medio text-xs px-2 py-1 bg-green-100 text-green-700 rounded hover:bg-green-200">+ Efectivo</button>
+              <button type="button" data-tipo="2" class="btn-medio text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200">+ Cheque</button>
+              <button type="button" data-tipo="3" class="btn-medio text-xs px-2 py-1 bg-purple-100 text-purple-700 rounded hover:bg-purple-200">+ Transferencia</button>
+            </div>
+          </div>
+          <div id="medios-lista" class="space-y-2"></div>
+          <p id="sin-medios" class="text-xs text-gray-400">Agregá al menos un medio de pago.</p>
+        </div>
+      </div>
+
+      <!-- Panel derecho: fecha + totales + confirmar -->
+      <div class="lg:col-span-1">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5 sticky top-8 space-y-4">
+          <div>
+            <label class="block text-xs font-medium text-gray-600 mb-1">Fecha</label>
+            <input id="fecha" type="date" required
+              class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500" />
+          </div>
+
+          <div class="space-y-1 text-sm border-t border-gray-100 pt-3">
+            <div class="flex justify-between text-gray-600">
+              <span>Total cobrado</span>
+              <span id="total-cobrado" class="font-mono">$ 0,00</span>
+            </div>
+            <div class="flex justify-between text-gray-600">
+              <span>Total imputado</span>
+              <span id="total-imputado" class="font-mono">$ 0,00</span>
+            </div>
+            <div id="diferencia-row" class="hidden flex justify-between font-medium text-red-600">
+              <span>Diferencia</span>
+              <span id="diferencia" class="font-mono"></span>
+            </div>
+            <div id="saldo-favor-row" class="hidden flex justify-between text-green-600 text-xs">
+              <span>Saldo a favor del cliente</span>
+              <span id="saldo-favor" class="font-mono"></span>
+            </div>
+          </div>
+
+          <button type="submit" id="btn-confirmar"
+            class="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed
+                   text-white font-medium py-3 rounded-lg text-sm">
+            Confirmar recibo
+          </button>
+          <p id="msg-error" class="hidden text-xs text-red-600 bg-red-50 p-2 rounded"></p>
+        </div>
+      </div>
+    </form>
+  </main>
+
+  <script type="module" src="/js/pages/cobranzas/nuevo-recibo.js"></script>
+</body>
+</html>

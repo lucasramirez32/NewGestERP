@@ -16,7 +16,8 @@ public class ActualizarArticuloCommandValidator : AbstractValidator<ActualizarAr
             .MaximumLength(100).WithMessage("La descripción no puede superar 100 caracteres.");
 
         RuleFor(x => x.IdGrupo)
-            .GreaterThan(0).WithMessage("Debe seleccionar un grupo.");
+            .GreaterThan(0).WithMessage("Debe seleccionar un grupo.")
+            .When(x => x.IdGrupo.HasValue);
 
         RuleFor(x => x.IdUnidad)
             .GreaterThan(0).WithMessage("Debe seleccionar una unidad.");

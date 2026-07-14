@@ -42,7 +42,9 @@ public class AsientoRepository : IAsientoRepository
             MERGE cnt.NumeradoresAsiento WITH (HOLDLOCK) AS tgt
             USING (SELECT {0} AS IdEmpresa) AS src ON tgt.IdEmpresa = src.IdEmpresa
             WHEN NOT MATCHED THEN INSERT (IdEmpresa, UltimoNumero) VALUES ({0}, 0);
-            """, idEmpresa, ct);
+            """,
+            new object[] { idEmpresa },
+            ct);
 
         var resultado = await _db.Database.SqlQueryRaw<long>(
             """

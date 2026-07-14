@@ -40,7 +40,7 @@ public class EmitirFacturaHandlerTests
             cuit: null, condicionIva: condicionCliente,
             domicilio: null, localidad: null, telefono: null, email: null, idZona: null, observaciones: null);
 
-        _clientesRepo.Setup(r => r.GetByIdAsync(10, 1, It.IsAny<CancellationToken>()))
+        _clientesRepo.Setup(r => r.GetByIdAsync(1, 10, It.IsAny<CancellationToken>()))
             .ReturnsAsync(cliente);
 
         _comprobantesRepo.Setup(r => r.ObtenerProximoNumeroAsync(1, 1, It.IsAny<TipoComprobante>(), It.IsAny<CancellationToken>()))

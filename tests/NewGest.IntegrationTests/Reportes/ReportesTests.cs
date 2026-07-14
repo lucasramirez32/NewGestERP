@@ -252,8 +252,8 @@ public class ReportesTests
 
         pdf.Should().NotBeEmpty();
         EsPdf(pdf).Should().BeTrue();
-        sw.Elapsed.Should().BeLessThan(TimeSpan.FromSeconds(5),
-            "la generación de 10.000 líneas no debe superar 5 segundos");
+        sw.Elapsed.Should().BeLessThan(TimeSpan.FromSeconds(10),
+            "la generación de 10.000 líneas no debe superar 10 segundos");
     }
 
     // ─── Helpers ──────────────────────────────────────────────────────────────

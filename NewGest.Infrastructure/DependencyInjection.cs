@@ -60,6 +60,10 @@ public static class DependencyInjection
         // Repositorios — Sprint 8-11 (facturación)
         services.AddScoped<IComprobanteRepository, ComprobanteRepository>();
 
+        // Repositorios — Sprint 12-13 (cobranzas)
+        services.AddScoped<IPagoRepository, PagoRepository>();
+        services.AddScoped<IAlicuotaRetencionRepository, AlicuotaRetencionRepository>();
+
         // Repositorios — Sprint 14-15 (contabilidad)
         services.AddScoped<ICuentaContableRepository, CuentaContableRepository>();
         services.AddScoped<IAsientoRepository, AsientoRepository>();

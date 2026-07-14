@@ -35,6 +35,15 @@ public class NewgestDbContext : IdentityDbContext<ApplicationUser, ApplicationRo
     public DbSet<Asiento> Asientos => Set<Asiento>();
     public DbSet<PartidaAsiento> PartidasAsiento => Set<PartidaAsiento>();
 
+    // Comercial — Cobranzas
+    public DbSet<Pago> Pagos => Set<Pago>();
+    public DbSet<MedioPago> MediosPago => Set<MedioPago>();
+    public DbSet<Imputacion> Imputaciones => Set<Imputacion>();
+    public DbSet<Retencion> Retenciones => Set<Retencion>();
+
+    // Config — Alícuotas de retención (parametrizables)
+    public DbSet<AlicuotaRetencion> AlicuotasRetencion => Set<AlicuotaRetencion>();
+
     // Comercial — Comprobantes (Facturación)
     public DbSet<Comprobante> Comprobantes => Set<Comprobante>();
     public DbSet<ItemComprobante> ItemsComprobante => Set<ItemComprobante>();

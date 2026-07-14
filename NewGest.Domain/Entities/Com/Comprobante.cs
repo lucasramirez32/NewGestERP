@@ -26,6 +26,9 @@ public class Comprobante : AggregateRoot
     public bool EsElectronica => Cae is not null;
     public bool Anulado { get; private set; }
 
+    // Saldo pendiente de cobro (se reduce al imputar pagos)
+    public decimal SaldoPendiente { get; private set; }
+
     private readonly List<ItemComprobante> _items = [];
     public IReadOnlyList<ItemComprobante> Items => _items.AsReadOnly();
 
@@ -67,10 +70,19 @@ public class Comprobante : AggregateRoot
             IdPedidoOrigen = idPedidoOrigen,
             TotalNeto = Math.Round(neto, 2),
             TotalIva = Math.Round(iva, 2),
-            Total = Math.Round(neto + iva, 2)
+            Total = Math.Round(neto + iva, 2),
+            SaldoPendiente = Math.Round(neto + iva, 2)
         };
         comprobante._items.AddRange(listaItems);
         return comprobante;
+    }
+
+    public void ReducirSaldo(decimal monto)
+    {
+        if (monto <= 0) throw new DomainException("El monto a reducir debe ser positivo.");
+        if (monto > SaldoPendiente)
+            throw new DomainException($"Monto a reducir ({monto:N2}) supera el saldo pendiente ({SaldoPendiente:N2}).");
+        SaldoPendiente = Math.Round(SaldoPendiente - monto, 2);
     }
 
     public void AsignarCae(string codigoCae, DateOnly fechaVencimiento)

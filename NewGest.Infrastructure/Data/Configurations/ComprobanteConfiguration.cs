@@ -23,6 +23,7 @@ public class ComprobanteConfiguration : IEntityTypeConfiguration<Comprobante>
         builder.Property(c => c.TotalNeto).HasColumnType("DECIMAL(18,2)").IsRequired();
         builder.Property(c => c.TotalIva).HasColumnType("DECIMAL(18,2)").IsRequired();
         builder.Property(c => c.Total).HasColumnType("DECIMAL(18,2)").IsRequired();
+        builder.Property(c => c.SaldoPendiente).HasColumnType("DECIMAL(18,2)").IsRequired();
         builder.Property(c => c.Anulado).IsRequired();
 
         // CaeInfo como owned entity (columnas embebidas)

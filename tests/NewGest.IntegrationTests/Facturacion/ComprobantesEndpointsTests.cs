@@ -4,6 +4,7 @@ using System.Net.Http.Json;
 using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
+using NewGest.Application.DTOs;
 using NewGest.Application.DTOs.Clientes;
 using NewGest.Application.DTOs.Comprobantes;
 using NewGest.Application.Services;
@@ -42,10 +43,14 @@ public class ComprobantesEndpointsTests : IAsyncLifetime
             })).CreateClient();
 
         // Login
-        var loginResp = await _client.PostAsJsonAsync("/api/auth/login",
-            new { username = NewgestWebApplicationFactory.UsuarioAdmin, password = NewgestWebApplicationFactory.PasswordAdmin });
+        var loginDto = new LoginDto(
+            NewgestWebApplicationFactory.IdEmpresaTest,
+            NewgestWebApplicationFactory.UsuarioAdmin,
+            NewgestWebApplicationFactory.PasswordAdmin);
+
+        var loginResp = await _client.PostAsJsonAsync("/api/auth/login", loginDto);
         loginResp.EnsureSuccessStatusCode();
-        var loginData = await loginResp.Content.ReadFromJsonAsync<LoginResponseDto>();
+        var loginData = await loginResp.Content.ReadFromJsonAsync<LoginResultDto>();
         _token = loginData!.Token;
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _token);
 
@@ -85,7 +90,8 @@ public class ComprobantesEndpointsTests : IAsyncLifetime
 
         var resp = await _client.PostAsJsonAsync("/api/comprobantes", dto);
 
-        resp.StatusCode.Should().Be(HttpStatusCode.Created);
+        var content = await resp.Content.ReadAsStringAsync();
+        resp.StatusCode.Should().Be(HttpStatusCode.Created, because: content);
         var result = await resp.Content.ReadFromJsonAsync<FacturaEmitidaDto>();
         result.Should().NotBeNull();
         result!.CodigoCae.Should().Be("12345678901234");
@@ -145,7 +151,8 @@ public class ComprobantesEndpointsTests : IAsyncLifetime
                 Items: [new ItemFacturaDto(0, $"Prod {i}", 1m, 100m, AlicuotaIva.Porcentaje21)]
             );
             var resp = await _client.PostAsJsonAsync("/api/comprobantes", dto);
-            resp.StatusCode.Should().Be(HttpStatusCode.Created, $"factura {i} debe emitirse correctamente");
+            var content = await resp.Content.ReadAsStringAsync();
+            resp.StatusCode.Should().Be(HttpStatusCode.Created, $"factura {i} debe emitirse correctamente. Error: {content}");
             var result = await resp.Content.ReadFromJsonAsync<FacturaEmitidaDto>();
             numeros.Add(result!.Numero);
         }
@@ -169,6 +176,8 @@ public class ComprobantesEndpointsTests : IAsyncLifetime
             Items: [new ItemFacturaDto(0, "Ítem test", 3m, 100m, AlicuotaIva.Porcentaje21)]
         );
         var emitirResp = await _client.PostAsJsonAsync("/api/comprobantes", dto);
+        var emitirContent = await emitirResp.Content.ReadAsStringAsync();
+        emitirResp.StatusCode.Should().Be(HttpStatusCode.Created, because: emitirContent);
         var emitido = await emitirResp.Content.ReadFromJsonAsync<FacturaEmitidaDto>();
 
         var getResp = await _client.GetAsync($"/api/comprobantes/{emitido!.IdComprobante}");
@@ -194,11 +203,10 @@ public class ComprobantesEndpointsTests : IAsyncLifetime
         using var scope = _factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<NewgestDbContext>();
 
-        // Limpiar comprobantes y numeradores de prueba
-        db.NumeradoresComprobante.RemoveRange(
-            db.NumeradoresComprobante.Where(n => n.IdEmpresa == 1 && n.PuntoVenta == 99));
-        db.ItemsComprobante.RemoveRange(
-            db.ItemsComprobante.Where(i => i.IdComprobante > 0)); // limpieza parcial
+        // Limpiar comprobantes y numeradores de prueba (primero items por FK)
+        db.ItemsComprobante.RemoveRange(db.ItemsComprobante);
+        db.Comprobantes.RemoveRange(db.Comprobantes);
+        db.NumeradoresComprobante.RemoveRange(db.NumeradoresComprobante);
         await db.SaveChangesAsync();
 
         // Crear cliente de prueba
@@ -221,6 +229,9 @@ public class ComprobantesEndpointsTests : IAsyncLifetime
     {
         using var scope = _factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<NewgestDbContext>();
+
+        db.ItemsComprobante.RemoveRange(db.ItemsComprobante);
+        db.Comprobantes.RemoveRange(db.Comprobantes);
         db.NumeradoresComprobante.RemoveRange(
             db.NumeradoresComprobante.Where(n => n.IdEmpresa == 1 && n.PuntoVenta == 99));
         await db.SaveChangesAsync();

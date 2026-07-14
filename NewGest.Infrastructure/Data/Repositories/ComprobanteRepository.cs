@@ -61,7 +61,8 @@ public class ComprobanteRepository : IComprobanteRepository
                 INSERT (IdEmpresa, PuntoVenta, Tipo, UltimoNumero)
                 VALUES ({0}, {1}, {2}, 0);
             """,
-            idEmpresa, puntoVenta, (int)tipo, ct);
+            new object[] { idEmpresa, puntoVenta, (int)tipo },
+            ct);
 
         // UPDATE atómico con ROWLOCK: incrementa y devuelve el nuevo valor
         var resultado = await _db.Database.SqlQueryRaw<long>(

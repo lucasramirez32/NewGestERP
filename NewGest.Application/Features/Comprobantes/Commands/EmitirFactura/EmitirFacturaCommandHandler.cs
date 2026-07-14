@@ -41,7 +41,7 @@ public class EmitirFacturaCommandHandler : IRequestHandler<EmitirFacturaCommand,
         var cuitEmisor = empresa.Cuit
             ?? throw new DomainException("La empresa no tiene CUIT configurado.");
 
-        var cliente = await _clientesRepo.GetByIdAsync(request.IdCliente, request.IdEmpresa, ct)
+        var cliente = await _clientesRepo.GetByIdAsync(request.IdEmpresa, request.IdCliente, ct)
             ?? throw new DomainException($"Cliente {request.IdCliente} no encontrado.");
 
         // El número se reserva de forma atómica antes de llamar a AFIP
