@@ -192,7 +192,8 @@ async function abrirModalEditar(idArticulo) {
     const a = await getArticuloById(idArticulo);
     formArticulo.querySelector('[name="codigo"]').value      = a.codigo?.trim() ?? '';
     formArticulo.querySelector('[name="descripcion"]').value = a.descripcion ?? '';
-    formArticulo.querySelector('[name="idGrupo"]').value     = a.idGrupo;
+    formArticulo.querySelector('[name="idGrupo"]').value     = a.idGrupo ?? '';
+    formArticulo.querySelector('[name="nombreGrupo"]').value = '';
     formArticulo.querySelector('[name="idUnidad"]').value    = a.idUnidad;
     formArticulo.querySelector('[name="precioLista"]').value = a.precioLista;
     formArticulo.querySelector('[name="precioCosto"]').value = a.precioCosto;
@@ -212,10 +213,14 @@ async function guardarArticulo(e) {
   e.preventDefault();
   if (!validarFormularioArticulo()) return;
 
+  const idGrupoVal = formArticulo.querySelector('[name="idGrupo"]').value;
+  const nombreGrupoVal = formArticulo.querySelector('[name="nombreGrupo"]').value.trim();
+
   const dto = {
     codigo:       formArticulo.querySelector('[name="codigo"]').value.trim().toUpperCase(),
     descripcion:  formArticulo.querySelector('[name="descripcion"]').value.trim(),
-    idGrupo:      parseInt(formArticulo.querySelector('[name="idGrupo"]').value, 10),
+    idGrupo:      idGrupoVal ? parseInt(idGrupoVal, 10) : null,
+    nombreGrupo:  nombreGrupoVal || null,
     idUnidad:     parseInt(formArticulo.querySelector('[name="idUnidad"]').value, 10),
     precioLista:  parseFloat(formArticulo.querySelector('[name="precioLista"]').value) || 0,
     precioCosto:  parseFloat(formArticulo.querySelector('[name="precioCosto"]').value) || 0,
@@ -253,11 +258,6 @@ function validarFormularioArticulo() {
   const descEl = formArticulo.querySelector('[name="descripcion"]');
   if (!descEl.value.trim()) {
     mostrarErrorArticulo('descripcion', 'La descripción es requerida.'); valido = false;
-  }
-
-  const grupoEl = formArticulo.querySelector('[name="idGrupo"]');
-  if (!grupoEl.value) {
-    mostrarErrorArticulo('idGrupo', 'Debe seleccionar un grupo.'); valido = false;
   }
 
   const precioEl = formArticulo.querySelector('[name="precioLista"]');

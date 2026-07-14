@@ -77,7 +77,8 @@ public static class ArticulosEndpoints
                 dto.PrecioLista,
                 dto.PrecioCosto,
                 dto.PorcentajeIva,
-                dto.Observaciones);
+                dto.Observaciones,
+                dto.NombreGrupo);
 
             var result = await mediator.Send(command, ct);
             return Results.Created($"/api/articulos/{result.IdArticulo}", result);
@@ -104,7 +105,8 @@ public static class ArticulosEndpoints
                 dto.PrecioLista,
                 dto.PrecioCosto,
                 dto.PorcentajeIva,
-                dto.Observaciones);
+                dto.Observaciones,
+                dto.NombreGrupo);
 
             var result = await mediator.Send(command, ct);
             return Results.Ok(result);

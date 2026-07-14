@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Plan de Cuentas — NewGest</title>
+  <link rel="stylesheet" href="/css/output.css" />
+</head>
+<body class="bg-gray-50 font-sans">
+  <main class="ml-64 p-8">
+    <div class="flex items-center justify-between mb-6">
+      <h1 class="text-2xl font-bold text-gray-800">Plan de Cuentas</h1>
+      <button id="btn-nueva" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium">
+        + Nueva cuenta
+      </button>
+    </div>
+
+    <!-- Filtro búsqueda -->
+    <div class="mb-4">
+      <input id="buscar" type="text" placeholder="Buscar por código o descripción..."
+        class="border border-gray-300 rounded-lg px-3 py-2 text-sm w-80 focus:ring-2 focus:ring-blue-500 focus:border-transparent" />
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+      <table class="w-full text-sm">
+        <thead class="bg-gray-50 border-b border-gray-200 text-xs font-medium text-gray-500 uppercase tracking-wider">
+          <tr>
+            <th class="px-4 py-3 text-left">Código</th>
+            <th class="px-4 py-3 text-left">Descripción</th>
+            <th class="px-4 py-3 text-left">Tipo</th>
+            <th class="px-4 py-3 text-left">Naturaleza</th>
+            <th class="px-4 py-3 text-center">Imputa</th>
+            <th class="px-4 py-3 text-center">Estado</th>
+          </tr>
+        </thead>
+        <tbody id="tabla-cuentas" class="divide-y divide-gray-100"></tbody>
+      </table>
+      <p id="sin-cuentas" class="hidden text-center text-gray-400 text-sm py-8">
+        No hay cuentas contables. Importá el plan de cuentas desde VFP o creá una manualmente.
+      </p>
+    </div>
+  </main>
+
+  <!-- Modal nueva cuenta -->
+  <dialog id="modal-cuenta" class="rounded-xl shadow-2xl p-0 w-full max-w-lg backdrop:bg-black/40">
+    <div class="p-6">
+      <h2 class="text-lg font-bold text-gray-800 mb-4">Nueva cuenta contable</h2>
+      <form id="form-cuenta" class="space-y-4">
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-medium text-gray-600 mb-1">Código <span class="text-red-500">*</span></label>
+            <input id="codigo" name="codigo" type="text" required placeholder="1.1.01"
+              class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500" />
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-gray-600 mb-1">Naturaleza</label>
+            <select id="naturaleza" name="naturaleza"
+              class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500">
+              <option value="1">Deudora</option>
+              <option value="2">Acreedora</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-gray-600 mb-1">Descripción <span class="text-red-500">*</span></label>
+          <input id="descripcion" name="descripcion" type="text" required
+            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500" />
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-medium text-gray-600 mb-1">Tipo</label>
+            <select id="tipo" name="tipo"
+              class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500">
+              <option value="1">Activo</option>
+              <option value="2">Pasivo</option>
+              <option value="3">Patrimonio</option>
+              <option value="4">Resultado</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-gray-600 mb-1">Cuenta padre (ID)</label>
+            <input id="id-padre" name="idCuentaPadre" type="number" min="0"
+              placeholder="Opcional"
+              class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500" />
+          </div>
+        </div>
+        <label class="flex items-center gap-2 text-sm text-gray-700">
+          <input id="imputa" name="imputaDirectamente" type="checkbox" class="rounded" />
+          Acepta imputación directa (no es agrupadora)
+        </label>
+        <p id="msg-error-cuenta" class="hidden text-xs text-red-600 bg-red-50 p-2 rounded"></p>
+        <div class="flex justify-end gap-3 pt-2">
+          <button type="button" id="btn-cancelar-cuenta"
+            class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg text-sm"
+            onclick="document.getElementById('modal-cuenta').close()">Cancelar</button>
+          <button type="submit"
+            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+  <script type="module" src="/js/pages/contabilidad/plan-cuentas.js"></script>
+</body>
+</html>

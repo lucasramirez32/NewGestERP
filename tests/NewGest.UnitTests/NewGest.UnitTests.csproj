@@ -23,6 +23,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\NewGest.Application\NewGest.Application.csproj" />
     <ProjectReference Include="..\..\NewGest.Domain\NewGest.Domain.csproj" />
+    <ProjectReference Include="..\..\NewGest.Infrastructure\NewGest.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

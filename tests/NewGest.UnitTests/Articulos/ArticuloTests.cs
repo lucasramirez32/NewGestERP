@@ -163,6 +163,27 @@ public class ArticuloTests
             .WithMessage("*IVA inválido*");
     }
 
+    [Fact]
+    public void Crear_con_idGrupo_nulo_es_valido()
+    {
+        var articulo = Articulo.Crear(1, "ART001", "Descripción",
+            null, 1, 100m, 50m, 21m, null);
+
+        articulo.IdGrupo.Should().BeNull();
+        articulo.Grupo.Should().BeNull();
+    }
+
+    [Fact]
+    public void Actualizar_con_idGrupo_nulo_es_valido()
+    {
+        var articulo = CrearArticuloValido();
+        articulo.IdGrupo.Should().Be(1);
+
+        articulo.Actualizar("Descripción", null, 1, 100m, 50m, 21m, null);
+
+        articulo.IdGrupo.Should().BeNull();
+    }
+
     // ─── Desactivar ───────────────────────────────────────────────────────────
     [Fact]
     public void Desactivar_pone_Activo_en_false()

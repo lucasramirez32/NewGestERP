@@ -17,7 +17,7 @@ namespace NewGest.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.16")
+                .HasAnnotation("ProductVersion", "9.0.17")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -125,6 +125,262 @@ namespace NewGest.Infrastructure.Migrations
                     b.ToTable("UserTokens", "cfg");
                 });
 
+            modelBuilder.Entity("NewGest.Domain.Entities.Cnt.Asiento", b =>
+                {
+                    b.Property<int>("IdAsiento")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdAsiento"));
+
+                    b.Property<bool>("Anulado")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Descripcion")
+                        .IsRequired()
+                        .HasMaxLength(400)
+                        .HasColumnType("nvarchar(400)");
+
+                    b.Property<DateOnly>("Fecha")
+                        .HasColumnType("date");
+
+                    b.Property<int?>("IdComprobanteOrigen")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IdEmpresa")
+                        .HasColumnType("int");
+
+                    b.Property<long>("Numero")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("TipoAsiento")
+                        .HasColumnType("int");
+
+                    b.HasKey("IdAsiento");
+
+                    b.HasIndex("IdComprobanteOrigen");
+
+                    b.HasIndex("IdEmpresa", "Fecha");
+
+                    b.HasIndex("IdEmpresa", "Numero")
+                        .IsUnique();
+
+                    b.ToTable("Asientos", "cnt");
+                });
+
+            modelBuilder.Entity("NewGest.Domain.Entities.Cnt.CuentaContable", b =>
+                {
+                    b.Property<int>("IdCuenta")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdCuenta"));
+
+                    b.Property<bool>("Activa")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Codigo")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("Descripcion")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int?>("IdCuentaPadre")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IdEmpresa")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("ImputaDirectamente")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Naturaleza")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Tipo")
+                        .HasColumnType("int");
+
+                    b.HasKey("IdCuenta");
+
+                    b.HasIndex("IdEmpresa", "Codigo")
+                        .IsUnique();
+
+                    b.HasIndex("IdEmpresa", "IdCuentaPadre");
+
+                    b.ToTable("CuentasContables", "cnt");
+                });
+
+            modelBuilder.Entity("NewGest.Domain.Entities.Cnt.PartidaAsiento", b =>
+                {
+                    b.Property<int>("IdPartida")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdPartida"));
+
+                    b.Property<string>("Concepto")
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<decimal>("Debe")
+                        .HasColumnType("DECIMAL(18,2)");
+
+                    b.Property<decimal>("Haber")
+                        .HasColumnType("DECIMAL(18,2)");
+
+                    b.Property<int>("IdAsiento")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IdCuenta")
+                        .HasColumnType("int");
+
+                    b.HasKey("IdPartida");
+
+                    b.HasIndex("IdAsiento", "IdCuenta");
+
+                    b.ToTable("PartidasAsiento", "cnt");
+                });
+
+            modelBuilder.Entity("NewGest.Domain.Entities.Com.Comprobante", b =>
+                {
+                    b.Property<int>("IdComprobante")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdComprobante"));
+
+                    b.Property<bool>("Anulado")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("CondicionIvaReceptor")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CuitCliente")
+                        .HasMaxLength(11)
+                        .HasColumnType("nvarchar(11)");
+
+                    b.Property<DateOnly>("Fecha")
+                        .HasColumnType("date");
+
+                    b.Property<int>("IdCliente")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IdEmpresa")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("IdPedidoOrigen")
+                        .HasColumnType("int");
+
+                    b.Property<long>("Numero")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("PuntoVenta")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RazonSocialCliente")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<decimal>("SaldoPendiente")
+                        .HasColumnType("DECIMAL(18,2)");
+
+                    b.Property<int>("Tipo")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Total")
+                        .HasColumnType("DECIMAL(18,2)");
+
+                    b.Property<decimal>("TotalIva")
+                        .HasColumnType("DECIMAL(18,2)");
+
+                    b.Property<decimal>("TotalNeto")
+                        .HasColumnType("DECIMAL(18,2)");
+
+                    b.HasKey("IdComprobante");
+
+                    b.HasIndex("IdEmpresa", "Fecha");
+
+                    b.HasIndex("IdEmpresa", "IdCliente");
+
+                    b.HasIndex("IdEmpresa", "Tipo", "PuntoVenta", "Numero")
+                        .IsUnique();
+
+                    b.ToTable("Comprobantes", "com");
+                });
+
+            modelBuilder.Entity("NewGest.Domain.Entities.Com.Imputacion", b =>
+                {
+                    b.Property<int>("IdImputacion")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdImputacion"));
+
+                    b.Property<int>("IdComprobante")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IdPago")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Monto")
+                        .HasColumnType("DECIMAL(18,2)");
+
+                    b.HasKey("IdImputacion");
+
+                    b.HasIndex("IdPago", "IdComprobante");
+
+                    b.ToTable("Imputaciones", "com");
+                });
+
+            modelBuilder.Entity("NewGest.Domain.Entities.Com.ItemComprobante", b =>
+                {
+                    b.Property<int>("IdItemComprobante")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdItemComprobante"));
+
+                    b.Property<int>("Alicuota")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Cantidad")
+                        .HasColumnType("DECIMAL(18,4)");
+
+                    b.Property<string>("Descripcion")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("nvarchar(300)");
+
+                    b.Property<int>("IdArticulo")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IdComprobante")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Iva")
+                        .HasColumnType("DECIMAL(18,2)");
+
+                    b.Property<decimal>("PrecioUnitario")
+                        .HasColumnType("DECIMAL(18,4)");
+
+                    b.Property<decimal>("Subtotal")
+                        .HasColumnType("DECIMAL(18,2)");
+
+                    b.Property<decimal>("SubtotalNeto")
+                        .HasColumnType("DECIMAL(18,2)");
+
+                    b.HasKey("IdItemComprobante");
+
+                    b.HasIndex("IdComprobante");
+
+                    b.ToTable("ItemsComprobante", "com");
+                });
+
             modelBuilder.Entity("NewGest.Domain.Entities.Com.ItemPedido", b =>
                 {
                     b.Property<int>("IdItemPedido")
@@ -180,6 +436,119 @@ namespace NewGest.Infrastructure.Migrations
                     b.HasIndex("IdRemito");
 
                     b.ToTable("ItemsRemito", "com");
+                });
+
+            modelBuilder.Entity("NewGest.Domain.Entities.Com.MedioPago", b =>
+                {
+                    b.Property<int>("IdMedioPago")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdMedioPago"));
+
+                    b.Property<string>("BancoEmisor")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateOnly?>("FechaVencimientoCheque")
+                        .HasColumnType("date");
+
+                    b.Property<int>("IdPago")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Monto")
+                        .HasColumnType("DECIMAL(18,2)");
+
+                    b.Property<string>("NumeroCheque")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("NumeroTransferencia")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("Tipo")
+                        .HasColumnType("int");
+
+                    b.HasKey("IdMedioPago");
+
+                    b.HasIndex("IdPago");
+
+                    b.ToTable("MediosPago", "com");
+                });
+
+            modelBuilder.Entity("NewGest.Domain.Entities.Com.NumeradorComprobante", b =>
+                {
+                    b.Property<int>("IdNumerador")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdNumerador"));
+
+                    b.Property<int>("IdEmpresa")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PuntoVenta")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Tipo")
+                        .HasColumnType("int");
+
+                    b.Property<long>("UltimoNumero")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("IdNumerador");
+
+                    b.HasIndex("IdEmpresa", "PuntoVenta", "Tipo")
+                        .IsUnique();
+
+                    b.ToTable("NumeradoresComprobante", "com");
+                });
+
+            modelBuilder.Entity("NewGest.Domain.Entities.Com.Pago", b =>
+                {
+                    b.Property<int>("IdPago")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdPago"));
+
+                    b.Property<bool>("Anulado")
+                        .HasColumnType("bit");
+
+                    b.Property<DateOnly>("Fecha")
+                        .HasColumnType("date");
+
+                    b.Property<int>("IdCliente")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IdEmpresa")
+                        .HasColumnType("int");
+
+                    b.Property<long>("Numero")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Observaciones")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<decimal>("SaldoAFavor")
+                        .HasColumnType("DECIMAL(18,2)");
+
+                    b.Property<decimal>("TotalImputado")
+                        .HasColumnType("DECIMAL(18,2)");
+
+                    b.Property<decimal>("TotalMedios")
+                        .HasColumnType("DECIMAL(18,2)");
+
+                    b.HasKey("IdPago");
+
+                    b.HasIndex("IdEmpresa", "IdCliente");
+
+                    b.HasIndex("IdEmpresa", "Numero")
+                        .IsUnique();
+
+                    b.ToTable("Pagos", "com");
                 });
 
             modelBuilder.Entity("NewGest.Domain.Entities.Com.Pedido", b =>
@@ -248,6 +617,86 @@ namespace NewGest.Infrastructure.Migrations
                     b.HasIndex("IdEmpresa", "IdPedido");
 
                     b.ToTable("Remitos", "com");
+                });
+
+            modelBuilder.Entity("NewGest.Domain.Entities.Com.Retencion", b =>
+                {
+                    b.Property<int>("IdRetencion")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdRetencion"));
+
+                    b.Property<decimal>("BaseImponible")
+                        .HasColumnType("DECIMAL(18,2)");
+
+                    b.Property<int>("IdEmpresa")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IdPago")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("MontoRetenido")
+                        .HasColumnType("DECIMAL(18,2)");
+
+                    b.Property<string>("NumeroFormulario")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<decimal>("Porcentaje")
+                        .HasColumnType("DECIMAL(5,2)");
+
+                    b.Property<string>("Provincia")
+                        .HasMaxLength(3)
+                        .HasColumnType("nvarchar(3)");
+
+                    b.Property<int>("Tipo")
+                        .HasColumnType("int");
+
+                    b.HasKey("IdRetencion");
+
+                    b.HasIndex("IdPago");
+
+                    b.ToTable("Retenciones", "com");
+                });
+
+            modelBuilder.Entity("NewGest.Domain.Entities.Config.AlicuotaRetencion", b =>
+                {
+                    b.Property<int>("IdAlicuota")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdAlicuota"));
+
+                    b.Property<int>("IdEmpresa")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Porcentaje")
+                        .HasColumnType("DECIMAL(5,2)");
+
+                    b.Property<string>("Provincia")
+                        .HasMaxLength(3)
+                        .HasColumnType("nvarchar(3)");
+
+                    b.Property<string>("TipoRetencion")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<DateOnly>("VigenciaDesde")
+                        .HasColumnType("date");
+
+                    b.Property<DateOnly?>("VigenciaHasta")
+                        .HasColumnType("date");
+
+                    b.HasKey("IdAlicuota");
+
+                    b.HasIndex("IdEmpresa", "TipoRetencion", "Provincia", "VigenciaDesde")
+                        .IsUnique()
+                        .HasFilter("[Provincia] IS NOT NULL");
+
+                    b.ToTable("AlicuotasRetencion", "cfg");
                 });
 
             modelBuilder.Entity("NewGest.Domain.Entities.Config.Parametro", b =>
@@ -454,7 +903,7 @@ namespace NewGest.Infrastructure.Migrations
                     b.Property<int>("IdEmpresa")
                         .HasColumnType("int");
 
-                    b.Property<int>("IdGrupo")
+                    b.Property<int?>("IdGrupo")
                         .HasColumnType("int");
 
                     b.Property<int>("IdUnidad")
@@ -900,6 +1349,61 @@ namespace NewGest.Infrastructure.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("NewGest.Domain.Entities.Cnt.PartidaAsiento", b =>
+                {
+                    b.HasOne("NewGest.Domain.Entities.Cnt.Asiento", null)
+                        .WithMany("Partidas")
+                        .HasForeignKey("IdAsiento")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("NewGest.Domain.Entities.Com.Comprobante", b =>
+                {
+                    b.OwnsOne("NewGest.Domain.Entities.Com.CaeInfo", "Cae", b1 =>
+                        {
+                            b1.Property<int>("ComprobanteIdComprobante")
+                                .HasColumnType("int");
+
+                            b1.Property<string>("Codigo")
+                                .IsRequired()
+                                .HasMaxLength(14)
+                                .HasColumnType("nvarchar(14)")
+                                .HasColumnName("CaeCodigo");
+
+                            b1.Property<DateOnly>("FechaVencimiento")
+                                .HasColumnType("date")
+                                .HasColumnName("CaeFechaVencimiento");
+
+                            b1.HasKey("ComprobanteIdComprobante");
+
+                            b1.ToTable("Comprobantes", "com");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ComprobanteIdComprobante");
+                        });
+
+                    b.Navigation("Cae");
+                });
+
+            modelBuilder.Entity("NewGest.Domain.Entities.Com.Imputacion", b =>
+                {
+                    b.HasOne("NewGest.Domain.Entities.Com.Pago", null)
+                        .WithMany("Imputaciones")
+                        .HasForeignKey("IdPago")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("NewGest.Domain.Entities.Com.ItemComprobante", b =>
+                {
+                    b.HasOne("NewGest.Domain.Entities.Com.Comprobante", null)
+                        .WithMany("Items")
+                        .HasForeignKey("IdComprobante")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("NewGest.Domain.Entities.Com.ItemPedido", b =>
                 {
                     b.HasOne("NewGest.Domain.Entities.Com.Pedido", null)
@@ -918,13 +1422,30 @@ namespace NewGest.Infrastructure.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("NewGest.Domain.Entities.Com.MedioPago", b =>
+                {
+                    b.HasOne("NewGest.Domain.Entities.Com.Pago", null)
+                        .WithMany("Medios")
+                        .HasForeignKey("IdPago")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("NewGest.Domain.Entities.Com.Retencion", b =>
+                {
+                    b.HasOne("NewGest.Domain.Entities.Com.Pago", null)
+                        .WithMany("Retenciones")
+                        .HasForeignKey("IdPago")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("NewGest.Domain.Entities.Neg.Articulo", b =>
                 {
                     b.HasOne("NewGest.Domain.Entities.Neg.GrupoArticulo", "Grupo")
                         .WithMany("Articulos")
                         .HasForeignKey("IdGrupo")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("NewGest.Domain.Entities.Neg.Unidad", "Unidad")
                         .WithMany()
@@ -945,6 +1466,25 @@ namespace NewGest.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("GrupoPadre");
+                });
+
+            modelBuilder.Entity("NewGest.Domain.Entities.Cnt.Asiento", b =>
+                {
+                    b.Navigation("Partidas");
+                });
+
+            modelBuilder.Entity("NewGest.Domain.Entities.Com.Comprobante", b =>
+                {
+                    b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("NewGest.Domain.Entities.Com.Pago", b =>
+                {
+                    b.Navigation("Imputaciones");
+
+                    b.Navigation("Medios");
+
+                    b.Navigation("Retenciones");
                 });
 
             modelBuilder.Entity("NewGest.Domain.Entities.Com.Pedido", b =>

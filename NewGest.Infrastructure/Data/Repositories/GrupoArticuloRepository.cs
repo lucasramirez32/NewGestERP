@@ -44,6 +44,13 @@ public class GrupoArticuloRepository : IGrupoArticuloRepository
         => _db.GruposArticulos
             .FirstOrDefaultAsync(g => g.IdEmpresa == idEmpresa && g.IdGrupo == idGrupo, ct);
 
+    public Task<GrupoArticulo?> GetByDescripcionAsync(int idEmpresa, string descripcion, CancellationToken ct)
+    {
+        var descUpper = descripcion.Trim().ToUpper();
+        return _db.GruposArticulos
+            .FirstOrDefaultAsync(g => g.IdEmpresa == idEmpresa && g.Descripcion.Trim().ToUpper() == descUpper, ct);
+    }
+
     public async Task AddAsync(GrupoArticulo grupo, CancellationToken ct)
         => await _db.GruposArticulos.AddAsync(grupo, ct);
 }

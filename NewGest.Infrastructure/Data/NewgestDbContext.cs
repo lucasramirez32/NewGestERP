@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using NewGest.Domain.Entities.Cnt;
 using NewGest.Domain.Entities.Com;
 using NewGest.Domain.Entities.Config;
 using NewGest.Domain.Entities.Empresas;
@@ -28,6 +29,25 @@ public class NewgestDbContext : IdentityDbContext<ApplicationUser, ApplicationRo
     public DbSet<Deposito> Depositos => Set<Deposito>();
     public DbSet<ExistenciaDeposito> ExistenciasDeposito => Set<ExistenciaDeposito>();
     public DbSet<MovimientoStock> MovimientosStock => Set<MovimientoStock>();
+
+    // Contabilidad
+    public DbSet<CuentaContable> CuentasContables => Set<CuentaContable>();
+    public DbSet<Asiento> Asientos => Set<Asiento>();
+    public DbSet<PartidaAsiento> PartidasAsiento => Set<PartidaAsiento>();
+
+    // Comercial — Cobranzas
+    public DbSet<Pago> Pagos => Set<Pago>();
+    public DbSet<MedioPago> MediosPago => Set<MedioPago>();
+    public DbSet<Imputacion> Imputaciones => Set<Imputacion>();
+    public DbSet<Retencion> Retenciones => Set<Retencion>();
+
+    // Config — Alícuotas de retención (parametrizables)
+    public DbSet<AlicuotaRetencion> AlicuotasRetencion => Set<AlicuotaRetencion>();
+
+    // Comercial — Comprobantes (Facturación)
+    public DbSet<Comprobante> Comprobantes => Set<Comprobante>();
+    public DbSet<ItemComprobante> ItemsComprobante => Set<ItemComprobante>();
+    public DbSet<NumeradorComprobante> NumeradoresComprobante => Set<NumeradorComprobante>();
 
     // Comercial — Pedidos y Remitos
     public DbSet<Pedido> Pedidos => Set<Pedido>();

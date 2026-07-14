@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NewGest.Application.Interfaces;
+using NewGest.Application.Services;
 using NewGest.Domain.Entities.Users;
 using NewGest.Infrastructure.Auth;
 using NewGest.Infrastructure.Data;
@@ -56,11 +57,35 @@ public static class DependencyInjection
         services.AddScoped<IViajeRepository, ViajeRepository>();
         services.AddScoped<IMutualRepository, MutualRepository>();
 
+        // Repositorios — Sprint 8-11 (facturación)
+        services.AddScoped<IComprobanteRepository, ComprobanteRepository>();
+
+        // Repositorios — Sprint 12-13 (cobranzas)
+        services.AddScoped<IPagoRepository, PagoRepository>();
+        services.AddScoped<IAlicuotaRetencionRepository, AlicuotaRetencionRepository>();
+
+        // Repositorios — Sprint 14-15 (contabilidad)
+        services.AddScoped<ICuentaContableRepository, CuentaContableRepository>();
+        services.AddScoped<IAsientoRepository, AsientoRepository>();
+
         // Servicios de infraestructura
         services.AddScoped<IJwtService, JwtService>();
         services.AddHttpContextAccessor();
         services.AddScoped<ICurrentUserService, CurrentUserService>();
         services.AddScoped<IStockService, StockService>();
+        services.AddScoped<IAfipService, AfipServiceVfpWrapper>();
+        services.AddScoped<IQrFiscalService, QrFiscalService>();
+        services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
+
+        // Servicios de reportes — Sprint 16-18
+        services.AddScoped<IReportService, Reports.ReportService>();
+        services.AddScoped<IExcelExportService, Reports.ExcelExportService>();
+
+        // Servicios de integraciones — Sprint 19-20
+        services.AddScoped<IEmailService, Email.MailKitEmailService>();
+        services.AddScoped<IWhatsAppService, Email.WhatsAppService>();
+        services.AddScoped<IWordExportService, Email.WordExportService>();
+        services.AddHttpClient("WhatsApp");
 
         return services;
     }

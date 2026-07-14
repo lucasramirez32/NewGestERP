@@ -118,12 +118,14 @@
       <div class="grid grid-cols-2 gap-4">
         <!-- Grupo -->
         <div>
-          <label class="form-label">Grupo <span class="text-red-500">*</span></label>
-          <select name="idGrupo" required class="form-input">
+          <label class="form-label">Grupo</label>
+          <select name="idGrupo" class="form-input">
             <option value="">Seleccionar grupo...</option>
             <!-- Cargado dinámicamente -->
           </select>
-          <p class="form-error hidden" data-for="idGrupo">Debe seleccionar un grupo.</p>
+          <input name="nombreGrupo" type="text" maxlength="100"
+            class="form-input mt-2" placeholder="O escribir grupo nuevo..." />
+          <p class="form-error hidden" data-for="idGrupo"></p>
         </div>
 
         <!-- Unidad -->

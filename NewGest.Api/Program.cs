@@ -83,6 +83,60 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "NewGest API v1"));
+
+    // Semilla de datos para desarrollo local
+    using (var scope = app.Services.CreateScope())
+    {
+        var db = scope.ServiceProvider.GetRequiredService<NewGest.Infrastructure.Data.NewgestDbContext>();
+        var userManager = scope.ServiceProvider.GetRequiredService<Microsoft.AspNetCore.Identity.UserManager<NewGest.Domain.Entities.Users.ApplicationUser>>();
+
+        if (!db.Empresas.Any())
+        {
+            var empresa = new NewGest.Domain.Entities.Empresas.Empresa
+            {
+                Nombre = "Empresa Test",
+                RazonSocial = "Empresa Test S.A.",
+                Cuit = "30-71398850-1",
+                Activa = true
+            };
+            db.Empresas.Add(empresa);
+            db.SaveChanges();
+
+            // Insertar usuario admin (DebeResetearPassword = false)
+            var admin = new NewGest.Domain.Entities.Users.ApplicationUser
+            {
+                UserName = "admin",
+                NormalizedUserName = "ADMIN",
+                IdEmpresa = empresa.IdEmpresa,
+                Nombre = "Administrador Test",
+                DebeResetearPassword = false,
+                Bloqueado = false,
+                IntentosFallidos = 0
+            };
+            var resultAdmin = userManager.CreateAsync(admin, "Admin1234").GetAwaiter().GetResult();
+            if (!resultAdmin.Succeeded)
+            {
+                throw new InvalidOperationException($"No se pudo crear usuario admin semilla: {string.Join(", ", resultAdmin.Errors.Select(e => e.Description))}");
+            }
+
+            // Insertar usuario de primer login (DebeResetearPassword = true)
+            var primerLogin = new NewGest.Domain.Entities.Users.ApplicationUser
+            {
+                UserName = "primervez",
+                NormalizedUserName = "PRIMERVEZ",
+                IdEmpresa = empresa.IdEmpresa,
+                Nombre = "Usuario Primer Login",
+                DebeResetearPassword = true,
+                Bloqueado = false,
+                IntentosFallidos = 0
+            };
+            var resultPrimer = userManager.CreateAsync(primerLogin, "Primer1234").GetAwaiter().GetResult();
+            if (!resultPrimer.Succeeded)
+            {
+                throw new InvalidOperationException($"No se pudo crear usuario primervez semilla: {string.Join(", ", resultPrimer.Errors.Select(e => e.Description))}");
+            }
+        }
+    }
 }
 
 app.UseCors("FrontendDev");
@@ -96,12 +150,18 @@ app.UseStaticFiles();
 
 // ─── Endpoints ───────────────────────────────────────────────────────────────
 app.MapAuthEndpoints();
+app.MapUsuariosEndpoints();
 app.MapParametrosEndpoints();
 app.MapClientesEndpoints();
 app.MapArticulosEndpoints();
 app.MapStockEndpoints();
 app.MapPedidosEndpoints();
 app.MapPersonalEndpoints();
+app.MapComprobantesEndpoints();
+app.MapContabilidadEndpoints();
+app.MapCobranzasEndpoints();
+app.MapReportesEndpoints();
+app.MapNotificacionesEndpoints();
 
 app.Run();
 

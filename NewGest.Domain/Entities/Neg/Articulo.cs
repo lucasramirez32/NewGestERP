@@ -8,7 +8,7 @@ public class Articulo
     public int IdEmpresa { get; private set; }
     public string Codigo { get; private set; } = default!;
     public string Descripcion { get; private set; } = default!;
-    public int IdGrupo { get; private set; }
+    public int? IdGrupo { get; private set; }
     public GrupoArticulo? Grupo { get; private set; }
     public int IdUnidad { get; private set; }
     public Unidad? Unidad { get; private set; }
@@ -26,7 +26,7 @@ public class Articulo
         int idEmpresa,
         string codigo,
         string descripcion,
-        int idGrupo,
+        int? idGrupo,
         int idUnidad,
         decimal precioLista,
         decimal precioCosto,
@@ -55,7 +55,7 @@ public class Articulo
 
     public void Actualizar(
         string descripcion,
-        int idGrupo,
+        int? idGrupo,
         int idUnidad,
         decimal precioLista,
         decimal precioCosto,
@@ -74,6 +74,12 @@ public class Articulo
         PrecioCosto = precioCosto;
         PorcentajeIva = porcentajeIva;
         Observaciones = observaciones;
+    }
+
+    public void AsociarGrupo(GrupoArticulo? grupo)
+    {
+        Grupo = grupo;
+        IdGrupo = grupo?.IdGrupo;
     }
 
     public void Desactivar() => Activo = false;
