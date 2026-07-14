@@ -16,5 +16,21 @@ public record ClienteDto(
     string? Email,
     int? IdZona,
     string? Observaciones,
-    bool Activo
+    bool Activo,
+    string? NombreFantasia,
+    decimal LimiteCredito,
+    int DiasMora,
+    decimal Descuento,
+    string? Provincia,
+    string? CodigoPostal,
+    string? ObraSocial,
+    string? NroAfiliado,
+    string? MedicoCabecera,
+    string? MatriculaMedico,
+    bool Alergia,
+    string? Alergias,
+    bool Tratamiento,
+    bool Convulsiones,
+    string? Medicacion,
+    string? Patologia
 );

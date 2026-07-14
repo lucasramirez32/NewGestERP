@@ -71,3 +71,19 @@ export async function desactivarCliente(id) {
 export async function getSaldoPendiente(id) {
   return apiFetch(`/api/clientes/${id}/saldo-pendiente`);
 }
+
+/**
+ * Obtiene el extracto analítico de la cuenta corriente del cliente.
+ * @param {number} id
+ */
+export async function getAnalitico(id) {
+  return apiFetch(`/api/clientes/${id}/analitico`);
+}
+
+/**
+ * Obtiene el histórico de artículos comprados por el cliente.
+ * @param {number} id
+ */
+export async function getHistoricoArticulos(id) {
+  return apiFetch(`/api/clientes/${id}/historico-articulos`);
+}

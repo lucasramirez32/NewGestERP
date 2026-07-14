@@ -23,6 +23,26 @@ public class ClienteConfiguration : IEntityTypeConfiguration<Cliente>
         builder.Property(c => c.Observaciones).HasColumnType("NVARCHAR(MAX)");
         builder.Property(c => c.Activo).IsRequired();
 
+        // Mapeo de campos adicionales migrados de VFP
+        builder.Property(c => c.NombreFantasia).HasMaxLength(100);
+        builder.Property(c => c.LimiteCredito).HasColumnType("DECIMAL(18,2)").HasDefaultValue(0m);
+        builder.Property(c => c.DiasMora).HasDefaultValue(0);
+        builder.Property(c => c.Descuento).HasColumnType("DECIMAL(5,2)").HasDefaultValue(0m);
+        builder.Property(c => c.Provincia).HasMaxLength(50);
+        builder.Property(c => c.CodigoPostal).HasMaxLength(10);
+
+        // Mapeo Ficha Médica
+        builder.Property(c => c.ObraSocial).HasMaxLength(100);
+        builder.Property(c => c.NroAfiliado).HasMaxLength(50);
+        builder.Property(c => c.MedicoCabecera).HasMaxLength(100);
+        builder.Property(c => c.MatriculaMedico).HasMaxLength(30);
+        builder.Property(c => c.Alergia).HasDefaultValue(false);
+        builder.Property(c => c.Alergias).HasMaxLength(200);
+        builder.Property(c => c.Tratamiento).HasDefaultValue(false);
+        builder.Property(c => c.Convulsiones).HasDefaultValue(false);
+        builder.Property(c => c.Medicacion).HasMaxLength(200);
+        builder.Property(c => c.Patologia).HasMaxLength(200);
+
         builder.HasIndex(c => new { c.IdEmpresa, c.Codigo }).IsUnique();
         builder.HasIndex(c => new { c.IdEmpresa, c.CUIT }).HasFilter("[CUIT] IS NOT NULL");
 

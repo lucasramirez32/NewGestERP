@@ -11,5 +11,6 @@ public record ClienteListItemDto(
     string CondicionIvaDescripcion,
     string? Localidad,
     int? IdZona,
-    bool Activo
+    bool Activo,
+    string? NombreFantasia
 );

@@ -80,99 +80,292 @@
   </div>
 
   <!-- ─── Modal ABM Cliente ─────────────────────────────────────────────────── -->
-  <ng-modal id="modal-cliente" titulo="Nuevo cliente" width="max-w-2xl">
+  <ng-modal id="modal-cliente" titulo="Nuevo cliente" width="max-w-4xl">
+    
+    <!-- Tab Bar -->
+    <div class="border-b border-gray-200 bg-gray-50/50 rounded-t-lg">
+      <nav class="-mb-px flex space-x-6 px-6" id="cliente-tabs" aria-label="Tabs">
+        <button type="button" data-tab="catalogo" class="border-blue-500 text-blue-600 whitespace-nowrap py-3.5 px-1 border-b-2 font-semibold text-sm transition-all focus:outline-none cursor-pointer">
+          Catálogo
+        </button>
+        <button type="button" data-tab="ficha-medica" class="border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-3.5 px-1 border-b-2 font-medium text-sm transition-all focus:outline-none cursor-pointer">
+          Ficha Médica
+        </button>
+        <button type="button" id="tab-btn-analitico" data-tab="analitico" class="hidden border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-3.5 px-1 border-b-2 font-medium text-sm transition-all focus:outline-none cursor-pointer">
+          Analítico Cuenta
+        </button>
+        <button type="button" id="tab-btn-historico" data-tab="historico" class="hidden border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 whitespace-nowrap py-3.5 px-1 border-b-2 font-medium text-sm transition-all focus:outline-none cursor-pointer">
+          Histórico Artículos
+        </button>
+      </nav>
+    </div>
+
     <form id="form-cliente" class="space-y-4 px-6 py-5" novalidate>
 
-      <div class="grid grid-cols-2 gap-4">
-        <!-- Código -->
-        <div>
-          <label class="form-label">Código <span class="text-red-500">*</span></label>
-          <input name="codigo" type="text" required maxlength="10"
-            class="form-input uppercase" placeholder="ej: CLI001" />
-          <p class="form-error hidden" data-for="codigo">El código es requerido (máx. 10 caracteres).</p>
+      <!-- PESTAÑA: CATALOGO -->
+      <div id="tab-content-catalogo" class="tab-pane space-y-4">
+        <div class="grid grid-cols-3 gap-4">
+          <!-- Código -->
+          <div>
+            <label class="form-label">Código <span class="text-red-500">*</span></label>
+            <input name="codigo" type="text" required maxlength="10"
+              class="form-input uppercase" placeholder="ej: CLI001" />
+            <p class="form-error hidden" data-for="codigo">El código es requerido.</p>
+          </div>
+          <!-- CUIT -->
+          <div>
+            <label class="form-label">CUIT <span class="text-gray-400 font-normal">(opcional)</span></label>
+            <input name="cuit" type="text" maxlength="13"
+              class="form-input" placeholder="20-12345678-9" />
+            <p id="cuit-error" class="form-error hidden">CUIT inválido. Formato: XX-XXXXXXXX-X</p>
+          </div>
+          <!-- Condición IVA -->
+          <div>
+            <label class="form-label">Condición IVA <span class="text-red-500">*</span></label>
+            <select name="condicionIva" required class="form-input">
+              <option value="">Seleccionar...</option>
+              <option value="1">Inscripto</option>
+              <option value="2">Exento</option>
+              <option value="3">Monotributo</option>
+              <option value="4">Consumidor Final</option>
+              <option value="5">No Inscripto</option>
+            </select>
+            <p class="form-error hidden" data-for="condicionIva">Seleccione una condición.</p>
+          </div>
         </div>
 
-        <!-- Condición IVA -->
+        <div class="grid grid-cols-2 gap-4">
+          <!-- Razón Social -->
+          <div>
+            <label class="form-label">Razón Social <span class="text-red-500">*</span></label>
+            <input name="razonSocial" type="text" required maxlength="100"
+              class="form-input" placeholder="Nombre o razón social completa" />
+            <p class="form-error hidden" data-for="razonSocial">La razón social es requerida.</p>
+          </div>
+          <!-- Nombre Fantasía -->
+          <div>
+            <label class="form-label">Nombre Fantasía (Negocio)</label>
+            <input name="nombreFantasia" type="text" maxlength="100"
+              class="form-input" placeholder="Nombre comercial de fantasía" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-4">
+          <!-- Límite de Crédito -->
+          <div>
+            <label class="form-label">Límite de Crédito ($)</label>
+            <input name="limiteCredito" type="number" min="0" step="0.01" value="0.00"
+              class="form-input" />
+          </div>
+          <!-- Días de Mora -->
+          <div>
+            <label class="form-label">Días Tolerancia Mora</label>
+            <input name="diasMora" type="number" min="0" step="1" value="0"
+              class="form-input" />
+          </div>
+          <!-- Descuento Especial -->
+          <div>
+            <label class="form-label">Descuento Especial (%)</label>
+            <input name="descuento" type="number" min="0" max="100" step="0.01" value="0.00"
+              class="form-input" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-4">
+          <!-- Domicilio -->
+          <div class="col-span-2">
+            <label class="form-label">Domicilio (Calle, Nro, Piso, Depto)</label>
+            <input name="domicilio" type="text" maxlength="150"
+              class="form-input" placeholder="Ej: Brandsen 2548 3er Piso A" />
+          </div>
+          <!-- Código Postal -->
+          <div>
+            <label class="form-label">Código Postal</label>
+            <input name="codigoPostal" type="text" maxlength="10"
+              class="form-input" placeholder="Ej: 5519" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <!-- Localidad -->
+          <div>
+            <label class="form-label">Localidad</label>
+            <input name="localidad" type="text" maxlength="80"
+              class="form-input" placeholder="Ej: Dorrego" />
+          </div>
+          <!-- Provincia -->
+          <div>
+            <label class="form-label">Provincia</label>
+            <input name="provincia" type="text" maxlength="50"
+              class="form-input" placeholder="Ej: Mendoza" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <!-- Teléfono -->
+          <div>
+            <label class="form-label">Teléfono</label>
+            <input name="telefono" type="text" maxlength="30"
+              class="form-input" placeholder="(0261) 400-0000" />
+          </div>
+          <!-- Email -->
+          <div>
+            <label class="form-label">Email</label>
+            <input name="email" type="email" maxlength="100"
+              class="form-input" placeholder="cliente@empresa.com" />
+            <p class="form-error hidden" data-for="email">El email no es válido.</p>
+          </div>
+        </div>
+
+        <!-- Observaciones -->
         <div>
-          <label class="form-label">Condición IVA <span class="text-red-500">*</span></label>
-          <select name="condicionIva" required class="form-input">
-            <option value="">Seleccionar...</option>
-            <option value="1">Inscripto</option>
-            <option value="2">Exento</option>
-            <option value="3">Monotributo</option>
-            <option value="4">Consumidor Final</option>
-            <option value="5">No Inscripto</option>
-          </select>
-          <p class="form-error hidden" data-for="condicionIva">Seleccione una condición.</p>
+          <label class="form-label">Observaciones</label>
+          <textarea name="observaciones" rows="3"
+            class="form-input resize-none" placeholder="Notas internas..."></textarea>
         </div>
       </div>
 
-      <!-- Razón Social -->
-      <div>
-        <label class="form-label">Razón Social <span class="text-red-500">*</span></label>
-        <input name="razonSocial" type="text" required maxlength="100"
-          class="form-input" placeholder="Nombre o razón social completa" />
-        <p class="form-error hidden" data-for="razonSocial">La razón social es requerida.</p>
-      </div>
-
-      <!-- CUIT -->
-      <div>
-        <label class="form-label">CUIT <span class="text-gray-400 font-normal">(opcional)</span></label>
-        <input name="cuit" type="text" maxlength="13"
-          class="form-input" placeholder="20-12345678-9" />
-        <p id="cuit-error" class="form-error hidden">CUIT inválido. Formato: XX-XXXXXXXX-X</p>
-      </div>
-
-      <div class="grid grid-cols-2 gap-4">
-        <!-- Domicilio -->
-        <div>
-          <label class="form-label">Domicilio</label>
-          <input name="domicilio" type="text" maxlength="150"
-            class="form-input" placeholder="Calle y número" />
+      <!-- PESTAÑA: FICHA MEDICA -->
+      <div id="tab-content-ficha-medica" class="tab-pane hidden space-y-4">
+        <div class="grid grid-cols-2 gap-4">
+          <!-- Obra Social -->
+          <div>
+            <label class="form-label">Obra Social / Seguro</label>
+            <input name="obraSocial" type="text" maxlength="100"
+              class="form-input" placeholder="Ej: OSDE, OSECAC..." />
+          </div>
+          <!-- Nro Afiliado -->
+          <div>
+            <label class="form-label">Número de Afiliado</label>
+            <input name="nroAfiliado" type="text" maxlength="50"
+              class="form-input" placeholder="Nro de credencial" />
+          </div>
         </div>
 
-        <!-- Localidad -->
-        <div>
-          <label class="form-label">Localidad</label>
-          <input name="localidad" type="text" maxlength="80"
-            class="form-input" placeholder="Ciudad" />
+        <div class="grid grid-cols-2 gap-4">
+          <!-- Médico Cabecera -->
+          <div>
+            <label class="form-label">Médico de Cabecera</label>
+            <input name="medicoCabecera" type="text" maxlength="100"
+              class="form-input" placeholder="Nombre completo" />
+          </div>
+          <!-- Matrícula -->
+          <div>
+            <label class="form-label">Matrícula del Médico</label>
+            <input name="matriculaMedico" type="text" maxlength="30"
+              class="form-input" placeholder="Nro matrícula" />
+          </div>
+        </div>
+
+        <!-- Indicadores rápidos (Checkboxes en fila) -->
+        <div class="bg-gray-50 p-4 rounded border border-gray-200 flex items-center justify-around">
+          <label class="flex items-center gap-2 cursor-pointer font-medium text-gray-700 text-sm">
+            <input name="alergia" type="checkbox" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" />
+            Tiene Alergias
+          </label>
+          <label class="flex items-center gap-2 cursor-pointer font-medium text-gray-700 text-sm">
+            <input name="tratamiento" type="checkbox" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" />
+            En Tratamiento
+          </label>
+          <label class="flex items-center gap-2 cursor-pointer font-medium text-gray-700 text-sm">
+            <input name="convulsiones" type="checkbox" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" />
+            Antecedente Convulsiones
+          </label>
+        </div>
+
+        <!-- Detalles Médicos -->
+        <div class="grid grid-cols-1 gap-4">
+          <div>
+            <label class="form-label">Alergias Detectadas</label>
+            <input name="alergias" type="text" maxlength="200"
+              class="form-input" placeholder="Sustancias o medicamentos a los que es alérgico" />
+          </div>
+          <div>
+            <label class="form-label">Medicación Habitual</label>
+            <input name="medicacion" type="text" maxlength="200"
+              class="form-input" placeholder="Fármacos que toma con regularidad" />
+          </div>
+          <div>
+            <label class="form-label">Patologías Crónicas / Diagnósticos</label>
+            <input name="patologia" type="text" maxlength="200"
+              class="form-input" placeholder="Diabetes, hipertensión, etc." />
+          </div>
         </div>
       </div>
 
-      <div class="grid grid-cols-2 gap-4">
-        <!-- Teléfono -->
-        <div>
-          <label class="form-label">Teléfono</label>
-          <input name="telefono" type="text" maxlength="30"
-            class="form-input" placeholder="(011) 4000-0000" />
+      <!-- PESTAÑA: ANALITICO CUENTA (READ-ONLY) -->
+      <div id="tab-content-analitico" class="tab-pane hidden space-y-4">
+        <div class="overflow-x-auto max-h-[300px] border border-gray-200 rounded-lg">
+          <table class="w-full text-xs text-left">
+            <thead class="bg-gray-100 sticky top-0 border-b border-gray-200 text-gray-700 uppercase font-semibold">
+              <tr>
+                <th class="px-4 py-2.5">Fecha</th>
+                <th class="px-4 py-2.5">Tipo</th>
+                <th class="px-4 py-2.5">Número</th>
+                <th class="px-4 py-2.5 text-right">Debe</th>
+                <th class="px-4 py-2.5 text-right">Haber</th>
+                <th class="px-4 py-2.5 text-right">Saldo</th>
+              </tr>
+            </thead>
+            <tbody id="analitico-tabla-body" class="divide-y divide-gray-100 bg-white">
+              <!-- Cargado dinámicamente -->
+            </tbody>
+          </table>
         </div>
-
-        <!-- Email -->
-        <div>
-          <label class="form-label">Email</label>
-          <input name="email" type="email" maxlength="100"
-            class="form-input" placeholder="cliente@empresa.com" />
-          <p class="form-error hidden" data-for="email">El email no es válido.</p>
+        <!-- Cajas de Totales -->
+        <div class="grid grid-cols-2 gap-4 pt-2">
+          <div class="p-4 bg-blue-50 border border-blue-100 rounded-lg text-center shadow-sm">
+            <div class="text-xs text-blue-600 font-semibold uppercase tracking-wider">Saldo Cuenta Corriente</div>
+            <div id="analitico-saldo-cta" class="text-2xl font-bold text-blue-900 mt-1">$0.00</div>
+          </div>
+          <div class="p-4 bg-emerald-50 border border-emerald-100 rounded-lg text-center shadow-sm">
+            <div class="text-xs text-emerald-600 font-semibold uppercase tracking-wider">Saldo a favor (Anticipos)</div>
+            <div id="analitico-saldo-favor" class="text-2xl font-bold text-emerald-900 mt-1">$0.00</div>
+          </div>
         </div>
       </div>
 
-      <!-- Observaciones -->
-      <div>
-        <label class="form-label">Observaciones</label>
-        <textarea name="observaciones" rows="3"
-          class="form-input resize-none" placeholder="Notas internas..."></textarea>
-      </div>
-
-      <!-- Botones -->
-      <div class="flex items-center justify-end gap-2 pt-2 border-t border-gray-100">
-        <button type="button" data-close class="btn-secondary">Cancelar</button>
-        <button type="submit" id="btn-guardar-cliente" class="btn-primary flex items-center gap-2">
-          <svg id="cliente-spinner" class="hidden w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
-            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+      <!-- PESTAÑA: HISTORICO ARTICULOS (READ-ONLY) -->
+      <div id="tab-content-historico" class="tab-pane hidden space-y-4">
+        <div class="flex items-center gap-2 bg-gray-50 p-2.5 rounded-lg border border-gray-200">
+          <svg class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
-          Guardar
-        </button>
+          <input id="search-historico-articulos" type="text" placeholder="Buscar por código o descripción del artículo..." class="form-input flex-1 py-1 text-xs bg-white" />
+        </div>
+        <div class="overflow-x-auto max-h-[300px] border border-gray-200 rounded-lg">
+          <table class="w-full text-xs text-left">
+            <thead class="bg-gray-100 sticky top-0 border-b border-gray-200 text-gray-700 uppercase font-semibold">
+              <tr>
+                <th class="px-4 py-2.5">Fecha</th>
+                <th class="px-4 py-2.5">Código</th>
+                <th class="px-4 py-2.5">Descripción</th>
+                <th class="px-4 py-2.5 text-right">Cant.</th>
+                <th class="px-4 py-2.5 text-right">Pcio. Unit.</th>
+                <th class="px-4 py-2.5 text-right">Total</th>
+                <th class="px-4 py-2.5">Comprobante</th>
+              </tr>
+            </thead>
+            <tbody id="historico-tabla-body" class="divide-y divide-gray-100 bg-white">
+              <!-- Cargado dinámicamente -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Botones de Acción -->
+      <div class="flex items-center justify-between pt-4 border-t border-gray-200">
+        <div class="text-xs text-gray-400">* Campos obligatorios en la sección Catálogo.</div>
+        <div class="flex items-center gap-2">
+          <button type="button" data-close class="btn-secondary">Cancelar</button>
+          <button type="submit" id="btn-guardar-cliente" class="btn-primary flex items-center gap-2">
+            <svg id="cliente-spinner" class="hidden w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+            </svg>
+            Guardar
+          </button>
+        </div>
       </div>
 
     </form>

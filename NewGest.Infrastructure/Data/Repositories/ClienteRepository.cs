@@ -35,6 +35,7 @@ public class ClienteRepository : IClienteRepository
             query = query.Where(c =>
                 c.Codigo.Contains(s) ||
                 c.RazonSocial.Contains(search) ||
+                (c.NombreFantasia != null && c.NombreFantasia.Contains(search)) ||
                 (c.CUIT != null && c.CUIT.Contains(s)));
         }
 
@@ -59,7 +60,8 @@ public class ClienteRepository : IClienteRepository
                 c.CondicionIva.ToString(),
                 c.Localidad,
                 c.IdZona,
-                c.Activo))
+                c.Activo,
+                c.NombreFantasia))
             .ToListAsync(ct);
 
         return new PagedResult<ClienteListItemDto>(items, total, page, pageSize);

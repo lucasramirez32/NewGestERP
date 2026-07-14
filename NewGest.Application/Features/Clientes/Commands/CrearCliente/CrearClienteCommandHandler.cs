@@ -40,7 +40,23 @@ public class CrearClienteCommandHandler : IRequestHandler<CrearClienteCommand, C
             request.Telefono,
             request.Email,
             request.IdZona,
-            request.Observaciones);
+            request.Observaciones,
+            request.NombreFantasia,
+            request.LimiteCredito,
+            request.DiasMora,
+            request.Descuento,
+            request.Provincia,
+            request.CodigoPostal,
+            request.ObraSocial,
+            request.NroAfiliado,
+            request.MedicoCabecera,
+            request.MatriculaMedico,
+            request.Alergia,
+            request.Alergias,
+            request.Tratamiento,
+            request.Convulsiones,
+            request.Medicacion,
+            request.Patologia);
 
         await _repo.AddAsync(cliente, cancellationToken);
         await _uow.CommitAsync(cancellationToken);
@@ -62,5 +78,21 @@ public class CrearClienteCommandHandler : IRequestHandler<CrearClienteCommand, C
         c.Email,
         c.IdZona,
         c.Observaciones,
-        c.Activo);
+        c.Activo,
+        c.NombreFantasia,
+        c.LimiteCredito,
+        c.DiasMora,
+        c.Descuento,
+        c.Provincia,
+        c.CodigoPostal,
+        c.ObraSocial,
+        c.NroAfiliado,
+        c.MedicoCabecera,
+        c.MatriculaMedico,
+        c.Alergia,
+        c.Alergias,
+        c.Tratamiento,
+        c.Convulsiones,
+        c.Medicacion,
+        c.Patologia);
 }

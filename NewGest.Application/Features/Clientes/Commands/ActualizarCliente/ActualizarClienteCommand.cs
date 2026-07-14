@@ -15,5 +15,21 @@ public record ActualizarClienteCommand(
     string? Telefono,
     string? Email,
     int? IdZona,
-    string? Observaciones
+    string? Observaciones,
+    string? NombreFantasia,
+    decimal LimiteCredito,
+    int DiasMora,
+    decimal Descuento,
+    string? Provincia,
+    string? CodigoPostal,
+    string? ObraSocial,
+    string? NroAfiliado,
+    string? MedicoCabecera,
+    string? MatriculaMedico,
+    bool Alergia,
+    string? Alergias,
+    bool Tratamiento,
+    bool Convulsiones,
+    string? Medicacion,
+    string? Patologia
 ) : IRequest<ClienteDto>;

@@ -38,7 +38,23 @@ public class ActualizarClienteCommandHandler : IRequestHandler<ActualizarCliente
             request.Telefono,
             request.Email,
             request.IdZona,
-            request.Observaciones);
+            request.Observaciones,
+            request.NombreFantasia,
+            request.LimiteCredito,
+            request.DiasMora,
+            request.Descuento,
+            request.Provincia,
+            request.CodigoPostal,
+            request.ObraSocial,
+            request.NroAfiliado,
+            request.MedicoCabecera,
+            request.MatriculaMedico,
+            request.Alergia,
+            request.Alergias,
+            request.Tratamiento,
+            request.Convulsiones,
+            request.Medicacion,
+            request.Patologia);
 
         _repo.Update(cliente);
         await _uow.CommitAsync(cancellationToken);
